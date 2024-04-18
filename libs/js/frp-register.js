@@ -26,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     observeDOMChanges(tasks);
 });
 
-
 function setupVideoAndButton(anchorClass, videoConstraints) {
-  // Create video container
   const videoContainer = insertElementBelowAnchor(anchorClass, VIDEO_CONTAINER_ID, "div", {
       styles: {
           display: "flex",
@@ -37,13 +35,8 @@ function setupVideoAndButton(anchorClass, videoConstraints) {
       }
   });
 
-  // Check if the video container was created successfully
-  if (!videoContainer) {
-      console.error("Failed to create video container.");
-      return;
-  }
+  if (!videoContainer) return;
 
-  // Create video element within the container
   const videoElement = insertElementBelowAnchor(`#${VIDEO_CONTAINER_ID}`, VIDEO_ELEMENT_ID, "video", {
       attributes: {
           autoplay: true,
@@ -54,21 +47,9 @@ function setupVideoAndButton(anchorClass, videoConstraints) {
       }
   });
 
-  
-  if (!videoElement) {
-    console.error("Failed to create video element.");
-    return;
-  }
+  if (!videoElement) return;
 
-  // Ensure the element is in the DOM
-  console.log("Video element status in DOM:", document.getElementById(VIDEO_ELEMENT_ID));
-
-
-  // If all elements are ready, request camera access
-  requestCameraAccess(`#${VIDEO_ELEMENT_ID}`, videoConstraints);
-
-  // Create capture button within the container
-  const captureButton = insertElementBelowAnchor(`#${VIDEO_ELEMENT_ID}`, CAPTURE_BUTTON_ID, "button", {
+  const captureButton = insertElementBelowAnchor(`#${VIDEO_CONTAINER_ID}`, CAPTURE_BUTTON_ID, "button", {
       content: "Capture Image",
       styles: {
           display: "block",
@@ -101,10 +82,7 @@ function setupVideoAndButton(anchorClass, videoConstraints) {
       ]
   });
 
-  // Check if the capture button was created successfully
-  if (!captureButton) {
-      console.error("Failed to create capture button.");
-      return;
-  }
+  if (!captureButton) return;
 
+  requestCameraAccess(`#${VIDEO_ELEMENT_ID}`, videoConstraints);
 }

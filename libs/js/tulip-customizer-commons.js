@@ -36,41 +36,50 @@
   }
 
 
-  // Insert element below an anchor class
+  // Insert element below an anchor class with integrated error checking
   export function insertElementBelowAnchor(anchorClass, newElementId, elementType, options) {
     const anchor = document.querySelector(anchorClass);
-    if (anchor && !document.getElementById(newElementId)) {
-        const newElement = document.createElement(elementType);
-        newElement.setAttribute("id", newElementId);
-
-        // Apply provided styles
-        if (options.styles) {
-            Object.assign(newElement.style, options.styles);
-        }
-
-        // Set attributes like 'autoplay', 'playsinline', etc.
-        if (options.attributes) {
-            for (let attr in options.attributes) {
-                newElement.setAttribute(attr, options.attributes[attr]);
-            }
-        }
-
-        // Add event listeners
-        if (options.eventListeners) {
-            options.eventListeners.forEach(listener => {
-                newElement.addEventListener(listener.type, listener.handler);
-            });
-        }
-
-        // Optionally set inner content
-        if (options.content) {
-            newElement.textContent = options.content;
-        }
-
-        anchor.parentNode.insertBefore(newElement, anchor.nextSibling);
-        return newElement;  // Return the created element for additional manipulation if needed
+    if (!anchor) {
+        console.error(`Anchor element with class ${anchorClass} not found.`);
+        return null;
     }
+    
+    if (document.getElementById(newElementId)) {
+        console.error(`Element with ID ${newElementId} already exists.`);
+        return null;
+    }
+
+    const newElement = document.createElement(elementType);
+    newElement.setAttribute("id", newElementId);
+
+    // Apply provided styles
+    if (options.styles) {
+        Object.assign(newElement.style, options.styles);
+    }
+
+    // Set attributes like 'autoplay', 'playsinline', etc.
+    if (options.attributes) {
+        for (let attr in options.attributes) {
+            newElement.setAttribute(attr, options.attributes[attr]);
+        }
+    }
+
+    // Add event listeners
+    if (options.eventListeners) {
+        options.eventListeners.forEach(listener => {
+            newElement.addEventListener(listener.type, listener.handler);
+        });
+    }
+
+    // Optionally set inner content
+    if (options.content) {
+        newElement.textContent = options.content;
+    }
+
+    anchor.parentNode.insertBefore(newElement, anchor.nextSibling);
+    return newElement;  // Return the created element for additional manipulation if needed
   }
+
 
   // Function to set the value of an input element for React-based applications
   // Helper of populateInputField
