@@ -1,6 +1,21 @@
-import { clickButtonById, populateInputField, observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from './tulip-customizer-commons.js';
-import { displaySuccessImage, displayErrorImage } from './tulip-customizer-camera.js';
+import { populateInputField, observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from './tulip-customizer-commons.js';
 import { initializeQrScanner } from './tulip-qr-scanner.js';
+
+
+const qrConfig = {
+  videoElementId: "qr-video",
+  containerId: "video-container",
+  qrRegexPattern: /^user:\/\/identiverse\?id=([^&]+)(&firstname=([^&]*))?(&lastname=([^&]*))?/,
+  successImageContainerId: "video-container",
+  submitButtonId: "identiverse_register_step1-submit-Submit-button_container",
+  submitButtonDelay: 1500,
+  fields: {
+      userName: "identiverse_register_step1-TEXT_FIELD-userName-input_container-input",
+      firstName: "identiverse_register_step1-TEXT_FIELD-firstName-input_container-input",
+      lastName: "identiverse_register_step1-TEXT_FIELD-lastName-input_container-input"
+  }
+};
+
 
 // Wait for the DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -107,9 +122,10 @@ function setupQrScannerAndPopulateInput() {
 
   if (window.qrScannerInitialized) return;
 
-  const qrScanner = initializeQrScanner("qr-video", "video-container", (result) => {
-      console.log("QR Code detected:", result.data);
-      handleQrResult(result.data);
+  const qrScanner = initializeQrScanner(qrConfig).then(() => {
+      console.log("QR Scanner initialized and running.");
+  }).catch(err => {
+      console.error("Failed to start QR scanner:", err);
   });
 
   if (!qrScanner) {
@@ -118,56 +134,4 @@ function setupQrScannerAndPopulateInput() {
   }
 
   window.qrScannerInitialized = true;
-}
-
-function handleQrResult(qrData) {
-  const pattern = /^user:\/\/identiverse\?id=([^&]+)(&firstname=([^&]*))?(&lastname=([^&]*))?/;
-  const match = qrData.match(pattern);
-
-  if (match) {
-      console.log("QR Code contains expected data. Stopping scanner...");
-      populateInputFieldsFromQrData(match);
-      displaySuccessImage("video-container");
-      setTimeout(() => {
-          clickButtonById("identiverse_register_step1-submit-Submit-button_container");
-      }, 1500);
-  } else {
-      console.log("QR Code does not contain expected data. Continuing to scan...");
-  }
-}
-
-function populateInputFieldsFromQrData(match) {
-  // Assuming `match` follows the structure from the regex pattern
-  // match[1]: ID
-  // match[3]: Firstname (optional)
-  // match[5]: Lastname (optional)
-
-  // Populate the userName input field with the extracted ID
-  if (match[1]) {
-      console.log("Extracted ID:", match[1]);
-      populateInputField(
-          "identiverse_register_step1-TEXT_FIELD-userName-input_container-input",
-          match[1]
-      );
-  }
-
-  // Check if firstName is present in the match and populate it
-  if (match[3]) {
-      const firstName = decodeURIComponent(match[3]);
-      console.log("Extracted firstName:", firstName);
-      populateInputField(
-          "identiverse_register_step1-TEXT_FIELD-firstName-input_container-input",
-          firstName
-      );
-  }
-
-  // Check if lastName is present in the match and populate it
-  if (match[5]) {
-      const lastName = decodeURIComponent(match[5]);
-      console.log("Extracted lastName:", lastName);
-      populateInputField(
-          "identiverse_register_step1-TEXT_FIELD-lastName-input_container-input",
-          lastName
-      );
-  }
 }
