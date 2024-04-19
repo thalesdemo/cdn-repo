@@ -1,6 +1,6 @@
 // Import utilities
-import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from './utils/tulip-customizer-commons.js';
-import { requestCameraAccess, captureImage, setupCameraSelector } from './utils/tulip-customizer-camera.js';
+import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from '../utils/tulip-customizer-commons.js';
+import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
 
 
 export function setupCameraSystem(config) {
