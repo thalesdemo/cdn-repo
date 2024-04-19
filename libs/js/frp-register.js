@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const videoConstraints = {
         width: { ideal: 800 },
         height: { ideal: 800 },
-        facingMode: "user" // or 'environment' to use the rear camera
+      //  facingMode: "user" // or 'environment' to use the rear camera
     };
 
     const tasks = [
@@ -26,8 +26,26 @@ document.addEventListener("DOMContentLoaded", function () {
     observeDOMChanges(tasks);
 });
 
+// Styles for dynamic elements
+const VIDEO_CONTAINER_STYLES = {
+    width: "100%",
+    maxWidth: "640px",
+    margin: "auto",
+    marginTop: "20px",
+    marginBottom: "10px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+};
+
+const videoContainerOptions = {
+    styles: VIDEO_CONTAINER_STYLES // Reused from constants
+};
+
 function setupVideoAndButton(anchorClass, videoConstraints) {
-    const videoContainer = insertElementBelowAnchor(anchorClass, VIDEO_CONTAINER_ID, "div");
+    const videoContainer = insertElementBelowAnchor(anchorClass, VIDEO_CONTAINER_ID, "div", videoContainerOptions);
+    const captureButtonContainer = insertElementBelowAnchor("#" + VIDEO_CONTAINER_ID, "div-capture-image", "div");
+
     if (!videoContainer) return;
 
     // Append video element as a child of the video container
@@ -40,7 +58,7 @@ function setupVideoAndButton(anchorClass, videoConstraints) {
     if (!videoElement) return;
 
     // Append capture button as a child of the video container
-    const captureButton = appendChildToElement(VIDEO_CONTAINER_ID, CAPTURE_BUTTON_ID, "button", {
+    const captureButton = appendChildToElement("div-capture-image", CAPTURE_BUTTON_ID, "button", {
         content: "Capture Image",
         eventListeners: [
             {

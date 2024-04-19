@@ -1,55 +1,9 @@
 // tulip-qr-scanner.js
 
 import QrScanner from './qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
-import { populateInputField, clickButtonById } from './tulip-customizer-commons.js';
+import { populateInputField, clickButtonById, insertElementBelowAnchor } from './tulip-customizer-commons.js';
 import { displaySuccessImage, displayErrorImage, setupCameraSelector } from './tulip-customizer-camera.js';
 
-// /**
-//  * Creates or retrieves a camera selector within a specified container.
-//  * @param {string} containerId - The ID of the container where the selector should be placed.
-//  * @param {string} selectorId - The ID to assign to the selector.
-//  * @returns {HTMLElement} The camera selector element.
-//  */
-// export function createCameraSelector(containerId, selectorId = "camera-selector") {
-//     const videoContainer = document.getElementById(containerId);
-//     let cameraSelector = document.getElementById(selectorId);
-//     if (!cameraSelector) {
-//         cameraSelector = document.createElement("select");
-//         cameraSelector.id = selectorId;
-//         cameraSelector.style.marginTop = "10px";
-//         videoContainer.appendChild(cameraSelector);
-//     }
-//     return cameraSelector;
-// }
-
-// /**
-//  * Populates a given selector with camera options.
-//  * @param {Array} cameras - An array of camera objects.
-//  * @param {HTMLElement} selector - The selector to populate.
-//  */
-// export function populateCameraSelector(cameras, selector) {
-//     selector.innerHTML = "";  // Clear existing options
-//     cameras.forEach((camera, index) => {
-//         const option = document.createElement("option");
-//         option.value = camera.id;
-//         option.text = camera.label || `Camera ${index + 1}`;
-//         selector.appendChild(option);
-//     });
-// }
-
-// /**
-//  * Sets up a change listener on the camera selector.
-//  * @param {HTMLElement} selector - The camera selector element.
-//  * @param {QrScanner} qrScanner - The QR scanner instance.
-//  */
-// export function setupCameraChangeListener(selector, qrScanner) {
-//     selector.removeEventListener("change", selector.changeListener);
-//     selector.changeListener = () => {
-//         qrScanner.setCamera(selector.value).catch(console.error);
-//         console.log("Camera switched to:", selector.value);
-//     };
-//     selector.addEventListener("change", selector.changeListener);
-// }
 
 /**
  * Sets the initial camera based on the available cameras.

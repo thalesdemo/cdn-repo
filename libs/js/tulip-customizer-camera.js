@@ -39,7 +39,7 @@
  * of the application. It enables straightforward updates to the facial recognition process and supports enhancements 
  * of camera-based functionalities within the system.
  */
-import { populateInputField } from './tulip-customizer-commons.js';
+import { insertElementBelowAnchor, populateInputField } from './tulip-customizer-commons.js';
 
 
 /**
@@ -147,6 +147,9 @@ export function displaySuccessImage(containerId) {
         return;
     }
 
+    // Set the background color of the video container to white
+    videoContainer.style.backgroundColor = "white";
+
     const existingImage = videoContainer.querySelector("img");
     if (!existingImage) {
         const checkmarkImage = document.createElement("img");
@@ -194,6 +197,9 @@ export function displayErrorImage(containerId) {
         return;
     }
 
+    // Set the background color of the video container to white
+    videoContainer.style.backgroundColor = "white";
+
     const existingImage = videoContainer.querySelector("img[alt='Error']");
     if (!existingImage) {
         const errorImage = document.createElement("img");
@@ -222,9 +228,6 @@ export function displayErrorImage(containerId) {
 }
 
 
-
-
-
 /**
  * Creates or retrieves a camera selector within a specified container.
  * This selector allows users to choose between available video input devices.
@@ -239,10 +242,13 @@ export function createCameraSelector(containerId, selectorId = "camera-selector"
         selector = document.createElement("select");
         selector.id = selectorId;
         selector.style.marginTop = "10px";
+        selector.style.display = "flex";
+        selector.style.margin = "auto";
         container.appendChild(selector);
     }
     return selector;
 }
+
 
 /**
  * Populates the camera selector with available video input options.
@@ -259,6 +265,7 @@ export function populateCameraSelector(cameras, selector) {
         selector.appendChild(option);
     });
 }
+
 
 /**
  * Sets up a listener on the camera selector to switch the video stream when a different camera is selected.
@@ -283,13 +290,15 @@ export function setupCameraChangeListener(selector, onCameraChange) {
  * @param {string} videoElementId - The ID of the video element that will display the camera stream.
  */
 export function setupCameraSelector(containerId, videoElementId) {
+
     const videoElement = document.getElementById(videoElementId);
     if (!videoElement) {
         console.error("Video element not found:", videoElementId);
         return;
     }
 
-    const cameraSelector = createCameraSelector(containerId);
+    insertElementBelowAnchor('#' + containerId, "div-button-selector", "div")
+    const cameraSelector = createCameraSelector("div-button-selector");
 
     // First request access to the user's camera
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -303,18 +312,23 @@ export function setupCameraSelector(containerId, videoElementId) {
         })
         .then(devices => {
             const cameras = devices.filter(device => device.kind === 'videoinput');
-            populateCameraSelector(cameras, cameraSelector);
-            setupCameraChangeListener(cameraSelector, selectedDeviceId => {
-                // Switch to the new camera
-                navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } } })
-                    .then(newStream => {
-                        videoElement.srcObject = newStream;
-                        videoElement.play();
-                    })
-                    .catch(error => {
-                        console.error("Failed to access camera with new device ID:", error);
-                    });
-            });
+            if (cameras.length > 1) {  // Only add the camera selector if there's more than one camera
+                const cameraSelector = createCameraSelector(containerId);
+                populateCameraSelector(cameras, cameraSelector);
+                setupCameraChangeListener(cameraSelector, selectedDeviceId => {
+                    // Switch to the new camera
+                    navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } } })
+                        .then(newStream => {
+                            videoElement.srcObject = newStream;
+                            videoElement.play();
+                        })
+                        .catch(error => {
+                            console.error("Failed to access camera with new device ID:", error);
+                        });
+                });
+            } else {
+                cameraSelector.style.display = "none";
+            }
         })
         .catch(error => {
             console.error("Error accessing the camera for initial setup:", error);
