@@ -1,4 +1,4 @@
-export const cameraSettingsRegister = {
+export const cameraSettingsLogin = {
     anchorClass: ".Step1LoginAnchorJS",
     videoContainerId: "video-container",
     videoElementId: "video-element",
