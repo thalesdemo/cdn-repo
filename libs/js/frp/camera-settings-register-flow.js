@@ -1,4 +1,4 @@
-// camera-settings-facial-frp.js
+// camera-settings-register-flow.js
 
 export const cameraSettingsRegister = {
     anchorClass: ".Step1PurchaseAnchorJS",

@@ -1,9 +1,11 @@
+// camera-settings-login-flow.js
+
 export const cameraSettingsLogin = {
-    anchorClass: ".Step1LoginAnchorJS",
+    anchorClass: ".Step1RedeemAnchorJS",
     videoContainerId: "video-container",
     videoElementId: "video-element",
     captureButtonId: "capture-button",
-    userImageInputId: "identiverse_login_stepq_facial-TEXT_FIELD-userImage-input_container-input",
+    userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
     videoConstraints: {
         width: { ideal: 800 },
         height: { ideal: 800 }
