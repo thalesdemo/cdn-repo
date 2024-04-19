@@ -7,7 +7,7 @@ const USER_IMAGE_INPUT_ID = "identiverse_purchase_step1-TEXT_FIELD-userImage-inp
 
 // Import utilities
 import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from './tulip-customizer-commons.js';
-import { requestCameraAccess, captureImage } from './tulip-customizer-camera.js';
+import { requestCameraAccess, captureImage, setupCameraSelector } from './tulip-customizer-camera.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const videoConstraints = {
@@ -51,5 +51,10 @@ function setupVideoAndButton(anchorClass, videoConstraints) {
     });
     if (!captureButton) return;
 
+    // Initially request camera access with the default constraints
     requestCameraAccess(`#${VIDEO_ELEMENT_ID}`, videoConstraints);
+    // Setup the camera selector
+    setupCameraSelector(VIDEO_CONTAINER_ID, VIDEO_ELEMENT_ID);
+
 }
+

@@ -2,11 +2,14 @@ import { populateInputField, observeDOMChanges, insertElementBelowAnchor, append
 import { initializeQrScanner } from './tulip-qr-scanner.js';
 
 
+window.qrScannerInitialized = window.qrScannerInitialized || false;
+
 const qrConfig = {
   videoElementId: "qr-video",
   containerId: "video-container",
   qrRegexPattern: /^user:\/\/identiverse\?id=([^&]+)(&firstname=([^&]*))?(&lastname=([^&]*))?/,
   successImageContainerId: "video-container",
+  failureImageContainerId: "video-container",
   submitButtonId: "identiverse_register_step1-submit-Submit-button_container",
   submitButtonDelay: 1500,
   fields: {
