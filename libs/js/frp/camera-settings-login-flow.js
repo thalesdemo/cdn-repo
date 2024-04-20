@@ -11,13 +11,16 @@ export const cameraSettingsLogin = {
         height: { ideal: 800 }
     },
     videoContainerStyles: {
-        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         maxWidth: "640px",
+        width: "100%",
+        height: "480px",
         margin: "auto",
         marginTop: "20px",
         marginBottom: "10px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center"
+        backgroundColor: "black",
+        overflow: "hidden"
     }
 };

@@ -27,6 +27,14 @@ function setupVideoAndButton(config, videoContainerOptions) {
     if (!videoContainer) return;
 
     const videoElement = appendChildToElement(config.videoContainerId, config.videoElementId, "video", {
+        styles: {
+            width: '100%',
+            /* Fill the width of the container */
+            height: '100%',
+            /* Fill the height of the container */
+            objectFit: 'cover'
+            /* Cover the container while maintaining the aspect ratio */
+        },
         attributes: {
             autoplay: true,
             playsinline: true

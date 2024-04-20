@@ -1,5 +1,5 @@
 // Constants for DOM elements IDs and selectors
-const VIDEO_ELEMENT_ID = "qr-video";
+const VIDEO_ELEMENT_ID = "video-element";
 const VIDEO_CONTAINER_ID = "video-container";
 const SUBMIT_BUTTON_ID = "identiverse_register_step1-submit-Submit-button_container";
 const REGISTER_STEP1_ANCHOR_CLASS = ".introStep1Register";
@@ -21,19 +21,25 @@ const SUBMIT_BUTTON_DELAY = 1500; // milliseconds
 
 // Styles for dynamic elements
 const VIDEO_CONTAINER_STYLES = {
-    width: "100%",
-    maxWidth: "640px",
-    margin: "auto",
-    marginTop: "20px",
-    marginBottom: "20px",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
+    maxWidth: "640px",
+    width: "100%",
+    height: "480px",
+    margin: "auto",
+    marginTop: "20px",
+    marginBottom: "10px",
+    backgroundColor: "black",
+    overflow: "hidden"
 };
 
 const VIDEO_ELEMENT_STYLES = {
     maxWidth: "100%",
-    margin: "auto"
+    margin: "auto",
+    width: "100%",      // Fill the width of the container
+    height: "100%",     // Fill the height of the container
+    objectFit: "cover"  // Cover the container while maintaining the aspect ratio
 };
 
 // QR Configuration object
