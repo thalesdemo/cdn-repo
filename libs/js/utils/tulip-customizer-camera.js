@@ -60,30 +60,55 @@ import { insertElementBelowAnchor, populateInputField } from './tulip-customizer
  * - Logs the attempt to find the video element and reports the outcome.
  * - Requests access to the user's camera with specified constraints and sets the video stream on the successfully found video element.
  * - If access is successful and the video element is found, the stream is started automatically.
+ * - Properly handles the case where a previous stream might still be active on the video element by stopping it before applying a new stream.
  * - Errors are logged to the console, useful for debugging issues related to camera access or incorrect selectors.
  */
 export function requestCameraAccess(videoSelector, videoConstraints) {
     console.log("Checking for video element with selector:", videoSelector);
-    console.log("Current element:", document.querySelector(videoSelector));
     
+    const videoElement = document.querySelector(videoSelector);
+    console.log("Current element:", videoElement);
+
+    if (videoElement) {
+        videoElement.setAttribute('muted', '');  // Ensure the element is muted
+        videoElement.setAttribute('playsinline', '');  // Plays inline on all devices
+        videoElement.autoplay = true;  // Set autoplay to true
+    }
+
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: videoConstraints })
             .then(stream => {
-                const video = document.querySelector(videoSelector);
-                if (video) {
-                    video.srcObject = stream;
-                    video.play();
+                if (videoElement) {
+                    // Stop any existing streams
+                    if (videoElement.srcObject) {
+                        const tracks = videoElement.srcObject.getTracks();
+                        tracks.forEach(track => track.stop());
+                        console.log("Stopped existing video tracks on the element before applying new stream.");
+                    }
+
+                    videoElement.srcObject = stream;
+                    return videoElement.play();  // Returns a promise
                 } else {
-                    console.error("Video element not found");
+                    console.error("Video element not found for selector:", videoSelector);
+                    return Promise.reject("Video element not found");
                 }
             })
+            .then(() => {
+                console.log("Camera access successful, stream started.");
+            })
             .catch(error => {
-                console.error("Error accessing the camera:", error);
+                console.error("Error accessing the camera or playing video:", error);
+                if (error.name === 'AbortError') {
+                    console.log("Retrying video playback...");
+                    videoElement.play().catch(e => console.error("Retry play failed:", e));
+                }
             });
     } else {
         console.error("Browser does not support getUserMedia API");
     }
 }
+
+
 
 
 /**

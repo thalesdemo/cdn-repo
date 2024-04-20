@@ -24,3 +24,11 @@
 #capture-button:mouseout {
     background-color: #f0f0f0;
 }
+
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    aspect-ratio: 0.5;
+}
