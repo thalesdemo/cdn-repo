@@ -1,6 +1,6 @@
 // Constants for DOM elements IDs and selectors
-const VIDEO_ELEMENT_ID = "video-element";
-const VIDEO_CONTAINER_ID = "video-container";
+const VIDEO_ELEMENT_ID = "qr-element";
+const VIDEO_CONTAINER_ID = "qr-container";
 const SUBMIT_BUTTON_ID = "identiverse_register_step1-submit-Submit-button_container";
 const REGISTER_STEP1_ANCHOR_CLASS = ".introStep1Register";
 const PREDEFINED_FIRST_NAME_SELECTOR = ".predefinedFirstName h1 span span";
