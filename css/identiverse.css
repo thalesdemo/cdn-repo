@@ -28,7 +28,7 @@
 
 canvas {
     position: absolute;
-    top: 0;
-    left: 0;
+    /* top: 0;
+    left: 0; */
     aspect-ratio: 0.5;
 }

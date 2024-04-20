@@ -2,6 +2,7 @@
 import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from '../utils/tulip-customizer-commons.js';
 import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
 
+const DELAY_RESIZE_OBSERVER = 1500; // Delay in milliseconds to wait before resizing the canvas
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
@@ -51,12 +52,12 @@ function setupVideoAndButton(config, videoContainerOptions) {
     });
 
     if (!captureButton) return;
-
+    requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints);
     // Load models and then enable camera access and face detection
     loadFaceApiModels().then(() => {
-        requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints);
+        observeContainerResize(config.videoContainerId);
         setupCameraSelector(config.videoContainerId, config.videoElementId);
-        startFaceDetection(videoElement); // Start face detection after models are loaded
+        startFaceDetection(videoElement, config); // Start face detection after models are loaded
     }).catch(error => {
         console.error('Error during model loading or camera setup:', error);
     });
@@ -78,12 +79,14 @@ export async function loadFaceApiModels() {
     }
 }
 
-function startFaceDetection(videoElement) {
+function startFaceDetection(videoElement, config) {
     videoElement.addEventListener('playing', () => {
         console.log("Video stream is playing. Starting detection...")
         const canvas = faceapi.createCanvasFromMedia(videoElement);
-        document.body.append(canvas);
+        const videoContainer = document.getElementById(config.videoContainerId)
+        videoContainer.append(canvas);
         const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
+        console.log("set faceapi canvas size to:", displaySize);
         faceapi.matchDimensions(canvas, displaySize);
     
         setInterval(async () => {
@@ -96,3 +99,35 @@ function startFaceDetection(videoElement) {
         }, 100);
     });
 }
+
+function observeContainerResize(elementId) {
+    const webcamContainer = document.getElementById(elementId);
+    let resizeTimeout; // Declare a variable outside of the resize event handler
+  
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (resizeTimeout) clearTimeout(resizeTimeout); // Clear the previous timeout
+      resizeTimeout = setTimeout(() => {
+        // Set a new timeout
+        console.log("resize observer called");
+        // if (!initialized) {
+        //   // webcam.updateConstraints();
+        //   console.log("camera initialization complete");
+        //   initialized = true;
+        //   return;
+        // }
+        entries.forEach((entry) => {
+          const { width, height } = entry.contentRect;
+          if (canvas) {
+            document.getElementById(elementId).removeChild(canvas); // Remove the existing canvas
+          }
+          displaySize = { width, height }; // Update the display size based on the new dimensions
+          console.log("set webcam display size to:", displaySize);
+          createCanvas(); // Create a new canvas
+          startDetection(); // Restart face detection
+        });
+        //webcam.updateConstraints();
+      }, DELAY_RESIZE_OBSERVER);
+    });
+  
+    resizeObserver.observe(webcamContainer);
+  }
