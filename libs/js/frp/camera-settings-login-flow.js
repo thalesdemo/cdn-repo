@@ -14,13 +14,13 @@ export const cameraSettingsLogin = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "640px",
+        maxWidth: "800px",
         width: "100%",
-        height: "480px",
+        height: "800px",
         margin: "auto",
         marginTop: "20px",
         marginBottom: "10px",
         backgroundColor: "black",
-        overflow: "hidden"
+        overflow: "hidden",
     }
 };
