@@ -20,5 +20,11 @@ export const cameraSettingsRegister = {
         margin: "auto",
         marginBottom: "10px",
         backgroundColor: "black",
+    },
+    faceApiFeatures: {
+        drawBoundingBox: true,
+        drawLandmarks: true,
+        drawExpressions: true,
+        drawAgeAndGender: true,
     }
 };

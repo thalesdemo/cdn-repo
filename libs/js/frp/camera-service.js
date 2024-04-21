@@ -73,7 +73,8 @@ export async function loadFaceApiModels() {
             faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
             faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
             faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
-            faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/')
+            faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
+            faceapi.nets.ageGenderNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/')
         ]);
         console.log('Face-API models loaded successfully');
     } catch (error) {
@@ -100,16 +101,61 @@ function startFaceDetection(videoElement, config) {
         faceapi.matchDimensions(canvas, displaySize);
     
         setInterval(async () => {
-            const detections = await faceapi.detectAllFaces(videoElement, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            const detections = await faceapi
+            .detectSingleFace(videoElement, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceExpressions()
+            .withAgeAndGender();
+
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-            faceapi.draw.drawDetections(canvas, resizedDetections);
-            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-            faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+            // avoid error if no face is detected
+            if(detections) {
+                // TODO: Add adaptive display size here should fix all issues? costly?
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+               
+                drawFeaturesOnCanvas(resizedDetections, config);
+
+                if (detections.detection.score > 0.6) {
+                    //console.log("Face detected! Score is:", detections.detection.score)
+                    //console.log("More details about detections object:", detections);
+
+                    // TODO: do something here with the data? add a counter, take 10 pics, then stop
+                    // captureAndStoreFacialScan();
+                    // takeSnapshot();
+                }
+            
+            }
+            // else {
+            //     console.log("No face detected");
+            // }
+
         }, 100);
     });
 }
 
+
+function drawFeaturesOnCanvas(detections, config) {
+    if (config.faceApiFeatures.drawBoundingBox) {
+      faceapi.draw.drawDetections(canvas, detections);
+    }
+    if (config.faceApiFeatures.drawLandmarks) {
+      faceapi.draw.drawFaceLandmarks(canvas, detections);
+    }
+    if (config.faceApiFeatures.drawExpressions) {
+      faceapi.draw.drawFaceExpressions(canvas, detections);
+    }
+    if (config.faceApiFeatures.drawAgeAndGender) {
+      const { age, gender, genderProbability } = detections;
+      new faceapi.draw.DrawTextField(
+        [
+          `${faceapi.round(age, 0)} years`,
+          `${gender} (${faceapi.round(genderProbability)})`,
+        ],
+        detections.detection.box.bottomRight
+      ).draw(canvas);
+    }
+  }
 
 function clearCanvas() {
     canvas
