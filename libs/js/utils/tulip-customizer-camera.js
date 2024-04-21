@@ -333,7 +333,7 @@ export function setupCameraSelector(containerId, videoElementId) {
                 // Apply new camera selection
                 const updatedConstraints = {
                     video: { deviceId: { exact: selectedDeviceId },
-                        width: { ideal: 700 },
+                        width: { ideal: 624 },
                         height: { ideal: 500 }  }
                 };
 

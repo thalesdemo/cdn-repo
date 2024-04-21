@@ -85,11 +85,18 @@ export async function loadFaceApiModels() {
 function startFaceDetection(videoElement, config) {
     videoElement.addEventListener('playing', () => {
         console.log("Video stream is playing. Starting detection...")
-        canvas = faceapi.createCanvasFromMedia(videoElement);
+        if(!canvas) {
+            canvas = faceapi.createCanvasFromMedia(videoElement);
+        }
+        else {
+            clearCanvas();
+        }
         const videoContainer = document.getElementById(config.videoContainerId)
         videoContainer.append(canvas);
-        const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
+        const displaySize = { width: 624, height: 500 };
+        console.log('Video dimensions:', displaySize);
         console.log("set faceapi canvas size to:", displaySize);
+        
         faceapi.matchDimensions(canvas, displaySize);
     
         setInterval(async () => {
@@ -103,6 +110,15 @@ function startFaceDetection(videoElement, config) {
     });
 }
 
+
+function clearCanvas() {
+    canvas
+      .getContext("2d")
+      .clearRect(0, 0, canvas.width, canvas.height);
+    console.log("Canvas cleared!");
+  }
+
+  
 function observeContainerResize(elementId) {
     const webcamContainer = document.getElementById(elementId);
     let resizeTimeout; // Declare a variable outside of the resize event handler
@@ -120,8 +136,9 @@ function observeContainerResize(elementId) {
         // }
         entries.forEach((entry) => {
           const { width, height } = entry.contentRect;
+          console.log("Set dimensions to width:", width, "height:", height);
           const element = document.getElementById(elementId);
-          faceapi.matchDimensions(canvas, { width: element.videoWidth, height: element.videoHeight});
+          faceapi.matchDimensions(canvas, { width, height});
         //   if (canvas) {
         //     document.getElementById(elementId).removeChild(canvas); // Remove the existing canvas
         //   }
