@@ -7,8 +7,8 @@ export const cameraSettingsRegister = {
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_purchase_step1-TEXT_FIELD-userImage-input_container-input",
     videoConstraints: {
-        width: { ideal: 800 },
-        height: { ideal: 800 }
+        width: { ideal: 404 },
+        height: { ideal: 480 }
     },
     videoContainerStyles: {
         display: "flex",
