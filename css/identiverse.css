@@ -26,9 +26,9 @@
 }
 
 
-canvas {
+#video-container canvas {
     position: absolute;
     /* top: 0;
     left: 0; */
-    aspect-ratio: 0.5;
+    /* aspect-ratio: 0.5; */
 }
