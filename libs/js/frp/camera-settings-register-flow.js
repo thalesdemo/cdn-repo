@@ -14,7 +14,7 @@ export const cameraSettingsRegister = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "640px",
+        maxWidth: "800px",
         width: "100%",
         height: "480px",
         margin: "auto",
