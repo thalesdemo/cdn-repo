@@ -79,7 +79,7 @@ export async function loadFaceApiModels() {
 function setupFaceDetection(videoElement, config) {
     console.log("Video metadata loaded. Setting up face detection...");
     const canvas = faceapi.createCanvasFromMedia(videoElement);
-    canvas.styles.position = 'absolute';
+    // canvas.styles.position = 'absolute';
     document.getElementById(config.videoContainerId).appendChild(canvas);
     globalCanvas = canvas; // Assign to global variable
     const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
