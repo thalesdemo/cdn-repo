@@ -75,51 +75,49 @@ export async function loadFaceApiModels() {
         throw error; // Rethrow to ensure calling function can handle the failure
     }
 }
-
 function setupFaceDetection(videoElement, config) {
-    console.log("Video metadata loaded. Setting up face detection...");
-    const canvas = faceapi.createCanvasFromMedia(videoElement);
-    document.getElementById(config.videoContainerId).appendChild(canvas);
-    globalCanvas = canvas; // Assign to global variable
-    const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
-    console.log("Webcam display size:", displaySize);
-    faceapi.matchDimensions(canvas, displaySize);
-    // observeContainerResize(config.videoElementId);
-    console.log("Video stream is playing. Starting detection...");
-    detectFaces(videoElement, displaySize);
+    if (!globalCanvas) {
+        globalCanvas = faceapi.createCanvasFromMedia(videoElement);
+        const videoContainer = document.getElementById(config.videoContainerId);
+        videoContainer.appendChild(globalCanvas);
+        globalCanvas.style.position = 'absolute';
+    }
+
+    // Adjust the canvas once the video metadata is loaded
+    videoElement.addEventListener('loadedmetadata', () => {
+        adjustCanvasToVideo(videoElement, globalCanvas);
+    });
+
+    // Setup detection once everything is in place
+    detectFaces(videoElement);
 }
 
-function detectFaces(videoElement, displaySize) {
+function adjustCanvasToVideo(videoElement, canvas) {
+    const videoStyle = window.getComputedStyle(videoElement);
+    const width = parseFloat(videoStyle.width);
+    const height = parseFloat(videoStyle.height);
+
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    // Apply faceapi dimensions match to the scaled size
+    faceapi.matchDimensions(canvas, { width: videoElement.videoWidth, height: videoElement.videoHeight });
+    // canvas.style.visibility = 'visible'; // Show canvas only after sizing
+    console.log("Canvas adjusted to match video display size.");
+}
+
+function detectFaces(videoElement) {
     setInterval(async () => {
         const detections = await faceapi.detectAllFaces(videoElement, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const resizedDetections = faceapi.resizeResults(detections, {
+            width: globalCanvas.width,
+            height: globalCanvas.height
+        });
         globalCanvas.getContext('2d').clearRect(0, 0, globalCanvas.width, globalCanvas.height);
         faceapi.draw.drawDetections(globalCanvas, resizedDetections);
         faceapi.draw.drawFaceLandmarks(globalCanvas, resizedDetections);
         faceapi.draw.drawFaceExpressions(globalCanvas, resizedDetections);
     }, 100);
-}
-
-function observeContainerResize(elementId) {
-    const webcamContainer = document.getElementById(elementId);
-    let resizeTimeout;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-        if (resizeTimeout) clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            entries.forEach(entry => {
-                const { width, height } = entry.contentRect;
-                const displaySize = { width, height };
-                // if (globalCanvas) {
-                //     document.getElementById(elementId).removeChild(globalCanvas);
-                // }
-
-                faceapi.matchDimensions(globalCanvas, displaySize);
-                // console.log("Updated webcam display size to:", displaySize);
-                // setupFaceDetection(document.getElementById(config.videoElementId), config);
-            });
-        }, DELAY_RESIZE_OBSERVER);
-    });
-
-    resizeObserver.observe(webcamContainer);
 }
