@@ -16,9 +16,5 @@ export const cameraSettingsRegister = {
         alignItems: "center",
         maxWidth: "700px",
         maxHeight: "500px",
-        width: "100%",
-        margin: "auto",
-        marginBottom: "10px",
-        backgroundColor: "black",
     }
 };
