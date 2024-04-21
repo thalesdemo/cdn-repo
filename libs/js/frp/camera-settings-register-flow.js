@@ -15,7 +15,7 @@ export const cameraSettingsRegister = {
         flexDirection: "column",
         alignItems: "center",
         maxWidth: "700px",
-        height: "500px",
+        maxHeight: "500px",
         width: "100%",
         margin: "auto",
         marginBottom: "10px",
