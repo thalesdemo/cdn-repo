@@ -3,6 +3,7 @@ import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } fro
 import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
 
 const DELAY_RESIZE_OBSERVER = 1500; // Delay in milliseconds to wait before resizing the canvas
+let canvas;
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
@@ -55,7 +56,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
     requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints);
     // Load models and then enable camera access and face detection
     loadFaceApiModels().then(() => {
-        observeContainerResize(config.videoContainerId);
+        // observeContainerResize(config.videoContainerId);
         setupCameraSelector(config.videoContainerId, config.videoElementId);
         startFaceDetection(videoElement, config); // Start face detection after models are loaded
     }).catch(error => {
@@ -82,7 +83,7 @@ export async function loadFaceApiModels() {
 function startFaceDetection(videoElement, config) {
     videoElement.addEventListener('playing', () => {
         console.log("Video stream is playing. Starting detection...")
-        const canvas = faceapi.createCanvasFromMedia(videoElement);
+        canvas = faceapi.createCanvasFromMedia(videoElement);
         const videoContainer = document.getElementById(config.videoContainerId)
         videoContainer.append(canvas);
         const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
@@ -117,13 +118,15 @@ function observeContainerResize(elementId) {
         // }
         entries.forEach((entry) => {
           const { width, height } = entry.contentRect;
-          if (canvas) {
-            document.getElementById(elementId).removeChild(canvas); // Remove the existing canvas
-          }
-          displaySize = { width, height }; // Update the display size based on the new dimensions
-          console.log("set webcam display size to:", displaySize);
-          createCanvas(); // Create a new canvas
-          startDetection(); // Restart face detection
+          const element = document.getElementById(elementId);
+          faceapi.matchDimensions(canvas, { width: element.videoWidth, height: element.videoHeight});
+        //   if (canvas) {
+        //     document.getElementById(elementId).removeChild(canvas); // Remove the existing canvas
+        //   }
+        //   displaySize = { width, height }; // Update the display size based on the new dimensions
+        //   console.log("set webcam display size to:", displaySize);
+        //   createCanvas(); // Create a new canvas
+        //   startDetection(); // Restart face detection
         });
         //webcam.updateConstraints();
       }, DELAY_RESIZE_OBSERVER);
