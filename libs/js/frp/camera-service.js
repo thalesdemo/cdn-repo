@@ -53,11 +53,13 @@ function setupVideoAndButton(config, videoContainerOptions) {
     });
 
     if (!captureButton) return;
-    requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints);
+    requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints).then(() => {
+            setupCameraSelector(config.videoContainerId, config.videoElementId);
+            console.log("Selector setup complete");
+    });
     // Load models and then enable camera access and face detection
     loadFaceApiModels().then(() => {
         // observeContainerResize(config.videoContainerId);
-        setupCameraSelector(config.videoContainerId, config.videoElementId);
         startFaceDetection(videoElement, config); // Start face detection after models are loaded
     }).catch(error => {
         console.error('Error during model loading or camera setup:', error);
