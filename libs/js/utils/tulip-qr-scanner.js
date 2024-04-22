@@ -2,7 +2,7 @@
 
 import QrScanner from '../qr-scanner/1.4.2/qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
 import { populateInputField, clickButtonById, insertElementBelowAnchor } from './tulip-customizer-commons.js';
-import { displaySuccessImage, displayErrorImage, setupCameraSelector } from './tulip-customizer-camera.js';
+import { displaySuccessImage, displayErrorImage, setupCameraSelector, setupCameraSelectorLegacyImpl } from './tulip-customizer-camera.js';
 
 
 /**
@@ -44,7 +44,7 @@ export function initializeQrScanner(config) {
         return QrScanner.listCameras(true);
     }).then(cameras => {
         // Set up the camera selector and handle camera changes
-        setupCameraSelector(config.containerId, config.videoElementId);
+        setupCameraSelectorLegacyImpl(config.containerId, config.videoElementId);
         
 
     }).catch(err => {

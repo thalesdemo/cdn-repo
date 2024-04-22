@@ -311,7 +311,7 @@ function startFaceDetection(videoElement, config) {
             //     console.log("No face detected");
             // }
 
-        }, 200);
+        }, 150);
     // });
 }
 
