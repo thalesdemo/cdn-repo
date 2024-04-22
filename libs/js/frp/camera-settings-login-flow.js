@@ -27,7 +27,7 @@ export const cameraSettingsLogin = {
         drawLandmarks: true,
         drawExpressions: true,
         drawAgeAndGender: true,
-        detectionInterval: 3000,
+        detectionInterval: 100,
         detectionThreshold: 0.8
     }
 };
