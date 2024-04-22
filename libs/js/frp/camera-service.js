@@ -72,7 +72,11 @@ function setupVideoAndButton(config, videoContainerOptions) {
         console.log("Selector setup complete");
         createCanvas(config.videoContainerId, videoElement);
         // observeContainerResize(config.videoContainerId);
-        mobileCameraSetup(videoElement, config);
+        // Check if the screen width is less than 768px
+        if (window.innerWidth < 768) {
+            // Call mobileCameraSetup if the display is less than 768px wide
+            mobileCameraSetup(videoElement, config);
+    }
         startFaceDetection(videoElement, config); // Start face detection
     }).catch(error => {
         console.error('Error during model loading or camera setup:', error);
@@ -94,16 +98,36 @@ function mobileCameraSetup(videoElement, config) {
     // });
 
     const videoContainer = document.getElementById(config.videoContainerId);
+    var body = document.body;
+    var paperClass = document.getElementsByClassName('overlay-content')[0];
 
 
-    if (videoContainer.classList.contains('simulated-fullscreen')) {
-        // Exiting simulated fullscreen
-        videoContainer.classList.remove('simulated-fullscreen');
-    } else {
-        // Entering simulated fullscreen
-        videoContainer.classList.add('simulated-fullscreen');
-    }
+    // Toggle the simulated fullscreen class
+    
+    // Move the videoContainer to be the first child of the body
+    body.insertBefore(videoContainer, body.firstChild);
 
+    // Hide paperClass
+    paperClass.style.display = 'none';
+
+    // Apply simulated fullscreen style to videoContainer
+    videoContainer.classList.add('simulated-fullscreen');
+
+    var topValue = (window.innerHeight - 500) / 2;
+    videoContainer.style.top = `${topValue}px`;  // Set the calculated top value
+
+
+    body.style.backgroundColor = 'black';  // Set the background color of the body to black
+    
+    // if (videoContainer.classList.contains('simulated-fullscreen')) {
+    //     // Exiting fullscreen
+    //     videoContainer.classList.remove('simulated-fullscreen');
+    //     body.classList.remove('body-no-scroll');  // Remove no-scroll class
+    // } else {
+    //     // Entering fullscreen
+    //     videoContainer.classList.add('simulated-fullscreen');
+    //     body.classList.add('body-no-scroll');  // Add no-scroll class
+    // }
 
     // document.getElementById('capture-button').addEventListener('click', toggleSimulatedFullscreen);
 
@@ -284,7 +308,7 @@ function startFaceDetection(videoElement, config) {
             //     console.log("No face detected");
             // }
 
-        }, 2500);
+        }, 200);
     // });
 }
 
