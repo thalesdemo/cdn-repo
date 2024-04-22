@@ -68,7 +68,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
     const modelLoading = loadFaceApiModels();
 
     Promise.all([cameraAccess, modelLoading]).then(() => {
-        setupCameraSelector(config.videoContainerId, config.videoElementId);
+        setupCameraSelector(config.videoContainerId, config.videoElementId, config.videoConstraints);
         console.log("Selector setup complete");
         createCanvas(config.videoContainerId, videoElement);
         // observeContainerResize(config.videoContainerId);
@@ -233,10 +233,13 @@ function setDimensions(videoContainerId, videoElement) {
 
     console.log("Setting video element dimensions to match video container.")
     const videoContainer = document.getElementById(videoContainerId)
-    videoElement.width = videoContainer.offsetWidth;
-    videoElement.height = videoContainer.offsetHeight;
+    videoElement.width = videoContainer.videoWidth;
+    videoElement.height = videoContainer.videoHeight;
+    canvas.width = videoContainer.videoWidth;
+    canvas.height = videoContainer.videoHeight;
 
-    const displaySize = { width: videoElement.offsetWidth, height: videoElement.offsetHeight };
+    // const displaySize = { width: videoElement.offsetWidth, height: videoElement.offsetHeight };
+    const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
     console.log("Matching canvas dimensions to displaySize.")
     faceapi.matchDimensions(canvas, displaySize);
     console.log(`After setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);

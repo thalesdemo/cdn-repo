@@ -314,7 +314,7 @@ export function setupCameraChangeListener(selector, onCameraChange) {
  * @param {string} containerId - The ID of the container where the camera selector will be placed.
  * @param {string} videoElementId - The ID of the video element that will display the camera stream.
  */
-export function setupCameraSelector(containerId, videoElementId) {
+export function setupCameraSelector(containerId, videoElementId, videoConstraints) {
     const videoElement = document.getElementById(videoElementId);
     if (!videoElement) {
         console.error("Video element or stream not found:", videoElementId);
@@ -333,8 +333,8 @@ export function setupCameraSelector(containerId, videoElementId) {
                 // Apply new camera selection
                 const updatedConstraints = {
                     video: { deviceId: { exact: selectedDeviceId },
-                        width: { ideal: 624 },
-                        height: { ideal: 500 }  }
+                        ...videoConstraints
+                     }
                 };
 
                 navigator.mediaDevices.getUserMedia(updatedConstraints)
