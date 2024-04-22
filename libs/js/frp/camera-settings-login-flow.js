@@ -6,16 +6,17 @@ export const cameraSettingsLogin = {
     videoElementId: "video-element",
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
+    hiddenFormSubmitButtonId: "identiverse_redeem_step1-submit-Submit-button_container",
     videoConstraints: {
-        width: { ideal: 768 },
-        height: { ideal: 896 }
+        width: { ideal: 900 },
+        height: { ideal: 900 }
     },
     videoContainerStyles: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "576px",
-        height: "672px",
+        maxWidth: "650px",
+        height: "650px",
         width: "100%",
         margin: "auto",
         marginBottom: "10px",
@@ -26,5 +27,7 @@ export const cameraSettingsLogin = {
         drawLandmarks: true,
         drawExpressions: true,
         drawAgeAndGender: true,
+        detectionInterval: 3000,
+        detectionThreshold: 0.8
     }
 };

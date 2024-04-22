@@ -1,9 +1,10 @@
 // Import utilities
-import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from '../utils/tulip-customizer-commons.js';
+import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement, clickButtonById } from '../utils/tulip-customizer-commons.js';
 import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
 
 const DELAY_RESIZE_OBSERVER = 1500; // Delay in milliseconds to wait before resizing the canvas
 let canvas;
+let scanIntervalId;
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
@@ -113,7 +114,7 @@ function mobileCameraSetup(videoElement, config) {
     // Apply simulated fullscreen style to videoContainer
     videoContainer.classList.add('simulated-fullscreen');
 
-    var topValue = (window.innerHeight - 672) / 2;
+    var topValue = (window.innerHeight - 650) / 2;
     videoContainer.style.top = `${topValue}px`;  // Set the calculated top value
 
     body.style.backgroundColor = 'black';  // Set the background color of the body to black
@@ -276,7 +277,7 @@ function startFaceDetection(videoElement, config) {
         // console.log(`After matchDimensions: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
         // console.log(`After matchDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
 
-        setInterval(async () => {
+        scanIntervalId = setInterval(async () => {
             const detections = await faceapi
             .detectAllFaces(videoElement, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
@@ -294,12 +295,43 @@ function startFaceDetection(videoElement, config) {
 
                 if (detections.length > 1) {
                     console.log("Multiple faces detected!");
+                    return;
                 }
-                else {
-                   // console.log("More details about detections object:", detections);
-                }
-                // if (detections.detection.score > 0.6) {
-                    // console.log("Face detected! Score is:", detections.detection.score)
+                // else {
+                //    console.log("More details about detections object:", detections);
+                // }
+
+                // // Ensure there is at least one detection and that the detection object is well-defined
+                // if (detections.length === 1 && detections[0] && detections[0].detection && typeof detections[0].detection.score !== 'undefined' && detections[0].detection.score > 0.70) {
+                //     console.log("Face detected! Score is:", detections.detection.score)
+
+                //     captureImage(videoElement, config.userImageInputId)
+                // }
+
+                detections.forEach(detection => {
+                    if (detection && detection.detection && typeof detection.detection.score !== 'undefined') {
+                        // Check if the detection score is above the threshold
+                        if (detection.detection.score > config.faceApiFeatures.detectionThreshold) {
+                            console.log('High score detection:', detection);
+                            captureImage(videoElement, config.userImageInputId);
+                            // TODO: add more logic  here, counter/timebased, multiple pics, etcs
+                            // for now submit first high score
+                            stopDetection();
+                            stopCamera(videoElement);
+                            clearCanvas();
+                            setTimeout(() => {
+                                clickButtonById(config.hiddenFormSubmitButtonId);
+
+                            }, 1500);
+                        }
+
+                    //     } else {
+                    //         console.log('Detection score below threshold:', detection);
+                    //     }
+                    // } else {
+                    //     console.log('Invalid detection or score undefined:', detection);
+                    }
+                });
 
                     // TODO: do something here with the data? add a counter, take 10 pics, then stop
                     // captureAndStoreFacialScan();
@@ -311,7 +343,7 @@ function startFaceDetection(videoElement, config) {
             //     console.log("No face detected");
             // }
 
-        }, 150);
+        }, config.faceApiFeatures.detectionInterval);
     // });
 }
 
@@ -370,7 +402,7 @@ function drawFeaturesOnCanvas(detections, config) {
 
 function clearCanvas() {
     canvas
-      .getContext("2d")
+      .getContext("2d", { willReadFrequently: true })
       .clearRect(0, 0, canvas.width, canvas.height);
     // console.log("Canvas cleared!");
   }
@@ -410,3 +442,23 @@ function observeContainerResize(elementId) {
   
     resizeObserver.observe(webcamContainer);
   }
+
+
+function stopDetection() {
+    console.log("Stopping detection...");
+    clearInterval(scanIntervalId);
+    scanIntervalId = null;
+    console.log("Interval stopped.");
+}
+
+function stopCamera(videoElement) {
+    console.log("Stopping camera...");
+
+    // stop camera
+    // Stop any existing streams
+    if (videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        console.log("Stopped existing video tracks on the element before applying new stream.");
+    }
+}
