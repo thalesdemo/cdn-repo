@@ -30,7 +30,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
         styles: {
             width: '100%',
             height: '100%',
-            objectFit: 'cover'
+            objectFit: 'contain'
         },
         attributes: {
             autoplay: true,
@@ -113,12 +113,12 @@ function mobileCameraSetup(videoElement, config) {
     // Apply simulated fullscreen style to videoContainer
     videoContainer.classList.add('simulated-fullscreen');
 
-    var topValue = (window.innerHeight - 500) / 2;
+    var topValue = (window.innerHeight - 672) / 2;
     videoContainer.style.top = `${topValue}px`;  // Set the calculated top value
-
 
     body.style.backgroundColor = 'black';  // Set the background color of the body to black
     
+    videoElement.style.objectFit = 'cover';  // Set the object-fit style to cover
     // if (videoContainer.classList.contains('simulated-fullscreen')) {
     //     // Exiting fullscreen
     //     videoContainer.classList.remove('simulated-fullscreen');
@@ -225,13 +225,13 @@ export async function loadFaceApiModels() {
 function setDimensions(videoContainerId, videoElement) {    
 
             
-    console.log(`Before setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    console.log(`Before setDimensions: Video dimensions: width: ${videoElement.videoWidth}, height: ${videoElement.videoHeight}`);
-    console.log(`Before setDimensions: Video ratio: ${videoElement.videoWidth / videoElement.videoHeight}`)
-    console.log(`Before setDimensions: Raw video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    console.log(`Before setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
+    // console.log(`Before setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
+    // console.log(`Before setDimensions: Video dimensions: width: ${videoElement.videoWidth}, height: ${videoElement.videoHeight}`);
+    // console.log(`Before setDimensions: Video ratio: ${videoElement.videoWidth / videoElement.videoHeight}`)
+    // console.log(`Before setDimensions: Raw video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
+    // console.log(`Before setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
 
-    console.log("Setting video element dimensions to match video container.")
+    // console.log("Setting video element dimensions to match video container.")
     const videoContainer = document.getElementById(videoContainerId)
     videoElement.width = videoContainer.videoWidth;
     videoElement.height = videoContainer.videoHeight;
@@ -240,11 +240,11 @@ function setDimensions(videoContainerId, videoElement) {
 
     // const displaySize = { width: videoElement.offsetWidth, height: videoElement.offsetHeight };
     const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
-    console.log("Matching canvas dimensions to displaySize.")
+    // console.log("Matching canvas dimensions to displaySize.")
     faceapi.matchDimensions(canvas, displaySize);
-    console.log(`After setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    console.log(`After setDimensions: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    console.log(`After setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
+    // console.log(`After setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
+    // console.log(`After setDimensions: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
+    // console.log(`After setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
 
     return displaySize;
 }
@@ -336,7 +336,7 @@ function resizeResults(detections, config) {
     // console.log(`After resizeResults: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
     // console.log(`After resizeResults: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
 
-    console.log("************** IN RESIZE RESULTS ************** CALLING MATCH DIMENSIONS");
+    // console.log("************** IN RESIZE RESULTS ************** CALLING MATCH DIMENSIONS");
     const videoElement = document.getElementById(config.videoElementId);
     const displaySize = setDimensions(config.videoContainerId, videoElement);
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
@@ -372,7 +372,7 @@ function clearCanvas() {
     canvas
       .getContext("2d")
       .clearRect(0, 0, canvas.width, canvas.height);
-    console.log("Canvas cleared!");
+    // console.log("Canvas cleared!");
   }
 
   

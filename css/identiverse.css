@@ -31,6 +31,9 @@
     /* top: 0;
     left: 0; */
     /* aspect-ratio: 0.5; */
+
+    width: 576px;
+    height: 672px;
 }
 
 
@@ -55,6 +58,16 @@
 .simulated-fullscreen canvas {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+.simulated-fullscreen video {
+    object-fit: cover;
+    /* Cover the entire element for mobile use */
+}
+
+.simulated-fullscreen canvas {
+    /* transform: scaleX(2.05); */
 }
 
 #overlayCanvas {

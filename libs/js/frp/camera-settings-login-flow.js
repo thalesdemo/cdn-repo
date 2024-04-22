@@ -7,15 +7,15 @@ export const cameraSettingsLogin = {
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
     videoConstraints: {
-        width: { ideal: 624 },
-        height: { ideal: 500 }
+        width: { ideal: 768 },
+        height: { ideal: 896 }
     },
     videoContainerStyles: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "624px",
-        height: "500px",
+        maxWidth: "576px",
+        height: "672px",
         width: "100%",
         margin: "auto",
         marginBottom: "10px",
