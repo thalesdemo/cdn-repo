@@ -32,3 +32,40 @@
     left: 0; */
     /* aspect-ratio: 0.5; */
 }
+
+
+
+.simulated-fullscreen {
+    position: fixed;
+    /* Fixed positioning to cover the screen */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    /* Full viewport width */
+    height: 100vh;
+    /* Full viewport height */
+    display: flex;
+    /* Enables flexbox */
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+    z-index: 9999;
+    /* High z-index to ensure it is on top */
+    background: black;
+    /* Fills background */
+    overflow: hidden;
+    /* Hides anything outside the bounds */
+}
+
+.simulated-fullscreen video,
+.simulated-fullscreen canvas {
+    max-width: 100%;
+    /* Maximum of 100% of the container width */
+    max-height: 100%;
+    /* Maximum of 100% of the container height */
+    object-fit: contain;
+    /* Ensures the aspect ratio is maintained while fitting the content */
+}

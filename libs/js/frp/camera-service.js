@@ -24,8 +24,6 @@ export function setupCameraSystem(config) {
 
 function setupVideoAndButton(config, videoContainerOptions) {
     const videoContainer = insertElementBelowAnchor(config.anchorClass, config.videoContainerId, "div", videoContainerOptions);
-    const captureButtonContainer = insertElementBelowAnchor("#" + config.videoContainerId, "div-capture-image", "div");
-
     if (!videoContainer) return;
 
     const videoElement = appendChildToElement(config.videoContainerId, config.videoElementId, "video", {
@@ -42,6 +40,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
 
     if (!videoElement) return;
 
+    const captureButtonContainer = insertElementBelowAnchor("#" + config.videoContainerId, "div-capture-image", "div");
     const captureButton = appendChildToElement("div-capture-image", config.captureButtonId, "button", {
         content: "Capture Image",
         eventListeners: [
@@ -53,33 +52,109 @@ function setupVideoAndButton(config, videoContainerOptions) {
     });
 
     if (!captureButton) return;
-    // Start both asynchronous operations
+
     const cameraAccess = requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints).then(() => {
-        // setupCameraSelector(config.videoContainerId, config.videoElementId);
-        // console.log("Selector setup complete");
-        // Wait until the video element begins playing
-        const videoElement = document.querySelector(`#${config.videoElementId}`);
         return new Promise((resolve) => {
-            videoElement.onplaying = () => {
-                resolve();
-                console.log("Video is now playing");
+            videoElement.onloadedmetadata = () => {
+                console.log("Camera metadata loaded");
+                videoElement.onplaying = () => {
+                    resolve();
+                    console.log("Video is now playing");
+                };
             };
         });
     });
 
     const modelLoading = loadFaceApiModels();
 
-    // Wait for both the camera access and model loading to complete
     Promise.all([cameraAccess, modelLoading]).then(() => {
+        setupCameraSelector(config.videoContainerId, config.videoElementId);
+        console.log("Selector setup complete");
         createCanvas(config.videoContainerId, videoElement);
         // observeContainerResize(config.videoContainerId);
+        mobileCameraSetup(videoElement, config);
         startFaceDetection(videoElement, config); // Start face detection
     }).catch(error => {
         console.error('Error during model loading or camera setup:', error);
     });
-
-
 }
+
+
+function mobileCameraSetup(videoElement, config) {
+    if (!videoElement) return;
+
+    // Create a button element for triggering fullscreen
+    const fullscreenButton = document.createElement('button');
+    fullscreenButton.innerHTML = 'Enter Fullscreen';
+    // fullscreenButton.disabled = true;  // Disable the button until metadata is loaded
+
+    // Listen for metadata loading
+    // videoElement.addEventListener('loadedmetadata', function () {
+    //     fullscreenButton.disabled = false;  // Enable the button once video metadata is loaded
+    // });
+
+    const videoContainer = document.getElementById(config.videoContainerId);
+
+
+    if (videoContainer.classList.contains('simulated-fullscreen')) {
+        // Exiting simulated fullscreen
+        videoContainer.classList.remove('simulated-fullscreen');
+    } else {
+        // Entering simulated fullscreen
+        videoContainer.classList.add('simulated-fullscreen');
+    }
+
+
+    // document.getElementById('capture-button').addEventListener('click', toggleSimulatedFullscreen);
+
+    // // Add event listener to the button to trigger fullscreen
+    // fullscreenButton.addEventListener('click', function () {
+    //     if (videoContainer.requestFullscreen) {
+    //         videoContainer.requestFullscreen();
+    //     } else if (videoContainer.webkitRequestFullscreen) {
+    //         videoContainer.webkitRequestFullscreen();
+    //     } else if (videoContainer.mozRequestFullScreen) {
+    //         videoContainer.mozRequestFullScreen(); // Careful to the capital S
+    //     } else if (videoContainer.msRequestFullscreen) {
+    //         videoContainer.msRequestFullscreen();
+    //     } else if (videoContainer.webkitEnterFullscreen) {
+    //         videoContainer.webkitEnterFullscreen(); // iOS-specific
+    //     }
+    //     console.log("DONE from click!");
+    // });
+
+    // // Append the button to the document or a specific container
+    // videoContainer.appendChild(fullscreenButton); // Append to the body or to a specific container as needed
+}
+
+
+// function mobileCameraSetup(videoElement, config) {
+//     if (!videoElement) return;
+
+//     // Add the 'loadedmetadata' event listener to enable fullscreen functionality once video is ready
+//     videoElement.addEventListener('loadedmetadata', function () {
+//         // Enable clicking on the video to enter fullscreen after metadata is loaded
+//         videoElement.addEventListener('click', function () {
+//             enterFullscreen(videoElement);
+//         });
+//     });
+// }
+
+// function enterFullscreen(videoElement) {
+//     if (videoElement.requestFullscreen) {
+//         videoElement.requestFullscreen();
+//     } else if (videoElement.webkitRequestFullscreen) {
+//         videoElement.webkitRequestFullscreen();
+//     } else if (videoElement.mozRequestFullScreen) {
+//         videoElement.mozRequestFullScreen(); // Note the capital S in 'Screen'
+//     } else if (videoElement.msRequestFullscreen) {
+//         videoElement.msRequestFullscreen();
+//     } else if (videoElement.webkitEnterFullscreen) {
+//         videoElement.webkitEnterFullscreen(); // This is specific to iOS
+//     }
+// }
+
+
 
 function createCanvas(videoContainerId, videoElement) {
 
@@ -92,6 +167,7 @@ function createCanvas(videoContainerId, videoElement) {
                 console.log("Creating canvas...");
                 
                 canvas = faceapi.createCanvasFromMedia(videoElement);
+                canvas.id = "overlayCanvas";
                 document.getElementById(videoContainerId).append(canvas);
                 console.log("Canvas created!");
                 const videoContainer = document.getElementById(videoContainerId);
@@ -175,7 +251,7 @@ function startFaceDetection(videoElement, config) {
 
         setInterval(async () => {
             const detections = await faceapi
-            .detectSingleFace(videoElement, new faceapi.TinyFaceDetectorOptions())
+            .detectAllFaces(videoElement, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
             .withFaceExpressions()
             .withAgeAndGender();
@@ -189,21 +265,26 @@ function startFaceDetection(videoElement, config) {
                
                 drawFeaturesOnCanvas(resizedDetections, config);
 
-                if (detections.detection.score > 0.6) {
-                    //console.log("Face detected! Score is:", detections.detection.score)
-                    //console.log("More details about detections object:", detections);
+                if (detections.length > 1) {
+                    console.log("Multiple faces detected!");
+                }
+                else {
+                   // console.log("More details about detections object:", detections);
+                }
+                // if (detections.detection.score > 0.6) {
+                    // console.log("Face detected! Score is:", detections.detection.score)
 
                     // TODO: do something here with the data? add a counter, take 10 pics, then stop
                     // captureAndStoreFacialScan();
                     // takeSnapshot();
-                }
+                // }
             
             }
             // else {
             //     console.log("No face detected");
             // }
 
-        }, 100);
+        }, 2500);
     // });
 }
 
@@ -247,14 +328,16 @@ function drawFeaturesOnCanvas(detections, config) {
       faceapi.draw.drawFaceExpressions(canvas, detections);
     }
     if (config.faceApiFeatures.drawAgeAndGender) {
-      const { age, gender, genderProbability } = detections;
-      new faceapi.draw.DrawTextField(
-        [
-          `${faceapi.round(age, 0)} years`,
-          `${gender} (${faceapi.round(genderProbability)})`,
-        ],
-        detections.detection.box.bottomRight
-      ).draw(canvas);
+        detections.forEach(result => {
+            const { age, gender, genderProbability } = result
+            new faceapi.draw.DrawTextField(
+              [
+                `${faceapi.round(age, 0)} years`,
+                `${gender} (${faceapi.round(genderProbability)})`
+              ],
+              result.detection.box.bottomRight
+            ).draw(canvas)
+          })
     }
   }
 
