@@ -63,7 +63,7 @@ import { insertElementBelowAnchor, populateInputField } from './tulip-customizer
  * - Properly handles the case where a previous stream might still be active on the video element by stopping it before applying a new stream.
  * - Errors are logged to the console, useful for debugging issues related to camera access or incorrect selectors.
  */
-export function requestCameraAccess(videoSelector, videoConstraints) {
+export async function requestCameraAccess(videoSelector, videoConstraints) {
     console.log("Checking for video element with selector:", videoSelector);
     
     const videoElement = document.querySelector(videoSelector);
@@ -314,9 +314,9 @@ export function setupCameraChangeListener(selector, onCameraChange) {
  * @param {string} containerId - The ID of the container where the camera selector will be placed.
  * @param {string} videoElementId - The ID of the video element that will display the camera stream.
  */
-export function setupCameraSelector(containerId, videoElementId) {
+export function setupCameraSelector(containerId, videoElementId, videoConstraints) {
     const videoElement = document.getElementById(videoElementId);
-    if (!videoElement || !videoElement.srcObject) {
+    if (!videoElement) {
         console.error("Video element or stream not found:", videoElementId);
         return;
     }
@@ -332,7 +332,9 @@ export function setupCameraSelector(containerId, videoElementId) {
             setupCameraChangeListener(cameraSelector, selectedDeviceId => {
                 // Apply new camera selection
                 const updatedConstraints = {
-                    video: { deviceId: { exact: selectedDeviceId } }
+                    video: { deviceId: { exact: selectedDeviceId },
+                        ...videoConstraints
+                     }
                 };
 
                 navigator.mediaDevices.getUserMedia(updatedConstraints)

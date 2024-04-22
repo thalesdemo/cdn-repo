@@ -26,9 +26,44 @@
 }
 
 
-canvas {
+#video-container canvas {
     position: absolute;
     /* top: 0;
     left: 0; */
-    aspect-ratio: 0.5;
+    /* aspect-ratio: 0.5; */
+}
+
+
+
+/* Simulated fullscreen styles */
+.simulated-fullscreen {
+    position: fixed;
+    /* Fixed positioning to cover the screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* Full viewport width */
+    height: 100vh;
+    /* Full viewport height */
+    z-index: 9999;
+    /* High z-index to ensure it is on top */
+    background: black;
+    pointer-events: none;
+}
+
+.simulated-fullscreen video,
+.simulated-fullscreen canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#overlayCanvas {
+    pointer-events: none;
+    /* Allows clicks to pass through to the video */
+}
+
+
+.body-no-scroll {
+    overflow: hidden;
+    /* Prevents scrolling on the body */
 }

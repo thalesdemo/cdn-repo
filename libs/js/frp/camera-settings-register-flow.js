@@ -14,7 +14,17 @@ export const cameraSettingsRegister = {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "700px",
-        maxHeight: "500px",
+        maxWidth: "624px",
+        height: "500px",
+        width: "100%",
+        margin: "auto",
+        marginBottom: "10px",
+        backgroundColor: "black",
+    },
+    faceApiFeatures: {
+        drawBoundingBox: true,
+        drawLandmarks: true,
+        drawExpressions: true,
+        drawAgeAndGender: true,
     }
 };
