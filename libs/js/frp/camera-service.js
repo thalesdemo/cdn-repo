@@ -7,7 +7,8 @@ import { DetectionScoreManager } from './detection-score-manager.js';
 let canvas; /* Canvas element for drawing face detection results */
 let scanIntervalId; /* Interval ID for face detection (to handle setInterval) */
 let personActivelyBeingDetected = false; /* Flag to indicate if a person is actively being detected */
-let scoreManager = new DetectionScoreManager(30, 0.7); /* Detection score manager to evaluate scores */
+let scoreManager = new DetectionScoreManager(30, 0.7, 10, 3); // Parameters: sampleSize, threshold, multipleDetectionWindow, multipleDetectionThreshold
+
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
@@ -196,48 +197,66 @@ function startFaceDetection(videoElement, config) {
         /* Clear the canvas before drawing new detections */
         clearCanvas();
 
-        /* Check if there are any detections */
-        if (detections.length > 0) {
-            const resizedDetections = resizeResults(detections, config);
-            drawFeaturesOnCanvas(resizedDetections, config);
-        
-            detections.forEach(detection => {
-                if (detection.detection.score) {
-                    scoreManager.addScore(detection.detection.score);  // Store the detection score.
-                    if (!scoreManager.evaluateScores()) {
-                        console.log("Many recent detections are below the threshold, resetting manager.");
-                        // stopDetection();  // Stop the detection if too many bad scores.
-                        // stopCamera(videoElement);
-                        // clearCanvas();
-                    }
-                }
-            });
-        
-            // Logic to handle high scoring detections
-            detections.forEach(detection => {
-                if (detection.detection.score >= config.faceApiFeatures.detectionThreshold) {
-                    console.log('High score detection:', detection);
-                    captureImage(videoElement, config.userImageInputId);
-                    handleHighScoreDetection(videoElement, config);
-                }
-            });
-        } else {
-            //console.log("No face detected");
-            // Optional: handle no detections case, for example by incrementing a "no detection" counter.
-        }
+        handleDetections(detections, config);
+
     }, config.faceApiFeatures.detectionInterval);
 
 }
 
-function handleHighScoreDetection(videoElement, config) {
-    if (!personActivelyBeingDetected) {
-        var display = document.querySelector('#animation-container');
-        startCountdown(3, display); // Starts a 3-second countdown
-        personActivelyBeingDetected = true;
+
+function handleDetections(detections, config) {
+    if (detections.length > 0) {
+        const resizedDetections = resizeResults(detections, config);
+        drawFeaturesOnCanvas(resizedDetections, config);
+    
+        if (!scoreManager.checkMultipleDetections(detections.length)) {
+            scoreManager.deactivatePersonDetection();
+            console.log("Multiple detections occurred too frequently, deactivating detection.");
+            return;
+        }
+    
+        detections.forEach(detection => {
+            if (detection.detection.score) {
+                scoreManager.addScore(detection.detection.score);
+                if (!scoreManager.evaluateScores()) {
+                    console.log("Many recent detections are below the threshold.");
+                    scoreManager.resetScores();
+                    return;
+                }
+                if (scoreManager.isPersonActive()) {
+                    scoreManager.updateHighestScore(detection.detection.score);
+                }
+            }
+        });
+    
+        if (scoreManager.isPersonActive()) {
+            const highestScore = scoreManager.getHighestScore();
+            if (highestScore >= config.faceApiFeatures.detectionThreshold) {
+                console.log('Capturing image with highest score:', highestScore);
+                captureImage(videoElement, config.userImageInputId);
+                scoreManager.resetScores();  // Optional: Reset after capturing image.
+            }
+        } else if (detections.some(detection => detection.detection.score >= config.faceApiFeatures.detectionThreshold)) {
+            scoreManager.activatePersonDetection();
+            var display = document.querySelector('#animation-container');
+            display.style.display = 'block';
+            startCountdown(3, display);
+        }
     } else {
-        // Additional checks or updates can be handled here if the person continues to be detected.
+        console.log("No face detected");
+        scoreManager.deactivatePersonDetection();
     }
 }
+
+// function handleHighScoreDetection(videoElement, config) {
+//     if (!personActivelyBeingDetected) {
+//         var display = document.querySelector('#animation-container');
+//         startCountdown(3, display); // Starts a 3-second countdown
+//         personActivelyBeingDetected = true;
+//     } else {
+//         // Additional checks or updates can be handled here if the person continues to be detected.
+//     }
+// }
 
         // /* Check if there are any detections */
         // if(detections) {
