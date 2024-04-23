@@ -1,23 +1,25 @@
 // Import utilities
 import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement, clickButtonById } from '../utils/tulip-customizer-commons.js';
 import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
-import { startCountdown } from './animation.js';
+// import { startCountdown } from './animation.js';
 import { DetectionScoreManager } from './detection-score-manager.js';
 
 let canvas; /* Canvas element for drawing face detection results */
 let scanIntervalId; /* Interval ID for face detection (to handle setInterval) */
-let scoreManager = new DetectionScoreManager(
-    30,     // sampleSize: Total number of samples to evaluate for final action
-    0.7,    // threshold: Minimum score considered good
-    10,     // recentWindow: Number of recent samples to check for bad score threshold
-    3       // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
-);
-
+let scoreManager; /* DetectionScoreManager instance for managing detection scores */
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
         styles: config.videoContainerStyles
     };
+
+    scoreManager = new DetectionScoreManager(
+        config.faceApiFeatures.countdownDuration * 1000 / config.faceApiFeatures.detectionInterval,  // sampleSize: Total number of samples to evaluate for final action
+        config.faceApiFeatures.detectionThreshold,    // threshold: Minimum score considered good
+        config.faceApiFeatures.badScore.windowSize,     // recentWindow: Number of recent samples to check for bad score threshold
+        config.faceApiFeatures.badScore.maxBadScoreInWindow,  // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
+        config.fontSize // Pass font size configuration
+    );
 
     document.addEventListener("DOMContentLoaded", function () {
         const tasks = [
@@ -54,17 +56,17 @@ function setupVideoAndButton(config, videoContainerOptions) {
     if (!videoElement) return;
 
     /* Create a button to capture an image manually (this will be removed in later versions in favor of a keystroke listener) */
-    const captureButtonContainer = insertElementBelowAnchor("#" + config.videoContainerId, "div-capture-image", "div");
-    const captureButton = appendChildToElement("div-capture-image", config.captureButtonId, "button", {
-        content: "Capture Image",
-        eventListeners: [
-            {
-                type: "click",
-                handler: () => captureImage(videoElement, config.userImageInputId)
-            }
-        ]
-    });
-    if (!captureButton) return;
+    // const captureButtonContainer = insertElementBelowAnchor("#" + config.videoContainerId, "div-capture-image", "div");
+    // const captureButton = appendChildToElement("div-capture-image", config.captureButtonId, "button", {
+    //     content: "Capture Image",
+    //     eventListeners: [
+    //         {
+    //             type: "click",
+    //             handler: () => captureImage(videoElement, config.userImageInputId)
+    //         }
+    //     ]
+    // });
+    // if (!captureButton) return;
 
     /* Load the camera and request access */
     const cameraAccess = requestCameraAccess(`#${config.videoElementId}`, config.videoConstraints).then(() => {
@@ -217,12 +219,18 @@ function handleScoreDetections(detections, config) {
     const isMultiple = detections.length != 1;
     const score = detections.length ? Math.max(...detections.map(det => det.detection.score)) : 0;
 
-    scoreManager.addDetection(score, isMultiple);
+    const isNewHigh = scoreManager.addDetection(score, isMultiple);
 
     if (!scoreManager.evaluateScores()) {
         console.log("Poor quality detections recently, resetting.");
         scoreManager.resetAll();
         return;
+    }
+
+    if (isNewHigh) {
+        console.log("New high detected with score:", score);
+        const videoElement = document.getElementById(config.videoElementId);
+        captureImage(videoElement, config.userImageInputId); // Capture image when a new high score is found
     }
 
     // Check for high enough scores to trigger the countdown once
@@ -234,13 +242,48 @@ function handleScoreDetections(detections, config) {
     if (scoreManager.hasEnoughSamples()) {
         console.log("Reached sufficient samples for evaluation.");
         if (scoreManager.getHighestScore() >= config.faceApiFeatures.detectionThreshold) {
-            console.log("High-quality detection session completed.");
-            // Optional: Actions based on high-quality session
+            console.log("High-quality detection session completed.");           
+            handleSuccessfulFaceDetectionSequence(config);
         } else {
             console.log("Session ended without sufficient quality.");
             scoreManager.resetAll();
         }
     }
+}
+
+async function handleSuccessfulFaceDetectionSequence(config) {
+    // Stop the detection
+    stopDetection();
+    
+    // Wait for a specified interval
+    await wait(config.delayBetweenAnimations);
+    
+    // Clear the canvas
+    clearCanvas();
+    
+    // Wait for another interval if needed
+    await wait(config.delayBetweenAnimations);
+
+    // Stop the camera
+    stopCamera(document.getElementById(config.videoElementId));
+    
+    // Wait longer than usual to account for the startCountdown interference (at 1000ms interval)
+    await wait(2000 - config.delayBetweenAnimations * 2);
+
+    // Display success message
+    const display = document.querySelector('#animation-container');
+    scoreManager.displaySuccessMessage(display);
+
+    // Pause a bit before submitting the form
+    await wait(1500);
+
+    clickButtonById(config.hiddenFormSubmitButtonId);
+
+}
+
+// Helper function to create a delay
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 

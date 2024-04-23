@@ -93,6 +93,8 @@
     /* Off-white color with 30-50% opacity */
     z-index: 10;
     pointer-events: none;
+    margin-top: 100px;
+    /* accounts for negative margins around the page, e.g., the icon */
     /* Makes sure the countdown doesn't interfere with video interactions */
 }
 

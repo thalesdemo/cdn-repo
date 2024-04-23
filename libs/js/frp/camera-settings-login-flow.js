@@ -27,7 +27,17 @@ export const cameraSettingsLogin = {
         drawLandmarks: true,
         drawExpressions: true,
         drawAgeAndGender: true,
-        detectionInterval: 100,
-        detectionThreshold: 0.8
+        detectionInterval: 100, // milliseconds
+        countdownDuration: 3, // seconds
+        detectionThreshold: 0.75,
+        badScore: {
+            windowSize: 10,             // recentWindow: Number of recent samples to check for bad score threshold
+            maxBadScoreInWindow: 4      // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
+        }
+    },
+    delayBetweenAnimations: 200, // 2x detectionInterval
+    fontSize: {
+        countdown: "328px", // Font size for countdown
+        success: "54px" // Font size for success message
     }
 };
