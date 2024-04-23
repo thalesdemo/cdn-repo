@@ -330,7 +330,7 @@ function resizeResults(detections, config) {
     const videoElement = document.getElementById(config.videoElementId);
             
 
-    canvas.style.display = 'block';
+    //canvas.style.display = 'block';
 
     const dims = faceapi.matchDimensions(canvas, videoElement, true);
     dims.height = videoElement.offsetHeight;

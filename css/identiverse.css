@@ -76,6 +76,6 @@
 }
 
 /* remove extra black pixel on the right */
-#video-element {
+/* #video-element {
     margin-right: -1px;
-}
+} */
