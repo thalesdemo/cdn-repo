@@ -7,6 +7,7 @@ export const cameraSettingsRegister = {
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_purchase_step6-TEXT_FIELD-userImage-input_container-input",
     hiddenFormSubmitButtonId: "identiverse_purchase_step6-submit-Submit-button_container",
+    mobileWidth: 744,
     videoConstraints: {
         width: { ideal: 1300 },
         height: { ideal: 1300 }
@@ -39,5 +40,5 @@ export const cameraSettingsRegister = {
     fontSize: {
         countdown: "328px", // Font size for countdown
         success: "54px" // Font size for success message
-    }
+    } // mobile will use half these dims
 };

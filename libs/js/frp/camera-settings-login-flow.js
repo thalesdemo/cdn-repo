@@ -7,6 +7,7 @@ export const cameraSettingsLogin = {
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
     hiddenFormSubmitButtonId: "identiverse_redeem_step1-submit-Submit-button_container",
+    mobileWidth: 744, //px (accounts for iPad mini)
     videoConstraints: {
         width: { ideal: 1300 },
         height: { ideal: 1300 }
@@ -39,5 +40,5 @@ export const cameraSettingsLogin = {
     fontSize: {
         countdown: "328px", // Font size for countdown
         success: "54px" // Font size for success message
-    }
+    } // mobile will use half these dims
 };

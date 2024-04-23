@@ -71,7 +71,7 @@ class DetectionScoreManager {
     }
 
     resetCountdown() {
-        console.log("resetCountdown called");
+        // console.log("resetCountdown called");
         if (this.countdownActive) {
             clearInterval(this.countdownId);
             this.countdownActive = false;

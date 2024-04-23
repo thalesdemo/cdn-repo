@@ -95,9 +95,9 @@ function setupVideoAndButton(config, videoContainerOptions) {
         /* Create the canvas for face detection */
         createCanvas(config.videoContainerId, videoElement);
 
-        /* Check if the screen width is less than 768px */
-        if (window.innerWidth < 768) {
-            /* Call mobileCameraSetup if the display is less than 768px wide */
+        /* Check if the screen width is less than 744px */
+        if (window.innerWidth < config.mobileWidth) {
+            /* Call mobileCameraSetup if the display is less than 744px wide */
             mobileCameraSetup(videoElement, config);
         }
     
@@ -113,7 +113,38 @@ function setupVideoAndButton(config, videoContainerOptions) {
 /* To improve logic, used for fullscreen on mobile devices only */
 function mobileCameraSetup(videoElement, config) {
     if (!videoElement) return;
+    console.log('Entered mobile camera setup with browser dimensions', `${window.innerWidth} x ${window.innerHeight}`)
+    
+    /* Half the font-size for animations in mobile */
+    console.log("Initial fontSizeConfig:", scoreManager.fontSizeConfig);
+    
+    Object.keys(scoreManager.fontSizeConfig).forEach(key => {
+        let value = scoreManager.fontSizeConfig[key];
+        console.log(`Current value for ${key}:`, value);  // Log current value
+    
+        // Extract the number from the string (assuming format is like "328px")
+        let numericValue = parseInt(value, 10); // Parse integer from the beginning of the string
+    
+        if (!isNaN(numericValue)) {
+            // Halve the numeric value and append 'px' back to it
+            scoreManager.fontSizeConfig[key] = (numericValue / 2) + 'px';
+        } else {
+            console.error(`Value for ${key} could not be converted to a number:`, value);
+        }
+    });
+    
+    console.log("Modified fontSizeConfig:", scoreManager.fontSizeConfig);
 
+    /* Lock the screen orientation */
+    // if (screen.orientation.type === 'portrait-primary' || screen.orientation.type === 'portrait-secondary') {
+    //     screen.orientation.lock();
+    //     console.log("Screen orientation locked to portrait:", screen.orientation.type)
+    // }
+    // else {
+    //     screen.orientation.lock('portrait');
+    //     console.log("Screen orientation set and locked to portrait:", screen.orientation.type)
+    // }
+    
     /* Get the video container and body elements */
     const videoContainer = document.getElementById(config.videoContainerId);
     var body = document.body;
@@ -275,8 +306,10 @@ async function handleSuccessfulFaceDetectionSequence(config) {
     scoreManager.displaySuccessMessage(display);
 
     // Pause a bit before submitting the form
-    await wait(1500);
+    await wait(1250);
+    exitFullscreen(config);
 
+    await wait(config.delayBetweenAnimations);
     clickButtonById(config.hiddenFormSubmitButtonId);
 
 }
@@ -361,5 +394,25 @@ function stopCamera(videoElement) {
         const tracks = videoElement.srcObject.getTracks();
         tracks.forEach(track => track.stop());
         console.log("Stopped existing video tracks on the element before applying new stream.");
+    }
+}
+
+
+function exitFullscreen(config) {
+    if(!config.videoContainerId) return;
+
+    if(window.innerWidth < config.mobileWidth) {
+        /* Remove simulated fullscreen style to videoContainer */
+        const videoContainer = document.getElementById(config.videoContainerId);
+        videoContainer.classList.remove('simulated-fullscreen');
+
+        /* Remove the display none to paperClass */    
+        var paperClass = document.getElementsByClassName('overlay-content')[0];
+        paperClass.style.display = 'block';
+
+        /* Remove the score from the screen */
+        const animationContainer = document.querySelector('#animation-container');
+        animationContainer.innerHTML = '';
+        animationContainer.style.display = 'none';
     }
 }
