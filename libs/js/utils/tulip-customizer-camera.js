@@ -76,7 +76,7 @@ export async function requestCameraAccess(videoSelector, videoConstraints) {
     }
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: videoConstraints })
+        navigator.mediaDevices.getUserMedia({ audio: false, video: videoConstraints })
             .then(stream => {
                 if (videoElement) {
                     // Stop any existing streams
@@ -332,6 +332,7 @@ export function setupCameraSelector(containerId, videoElementId, videoConstraint
             setupCameraChangeListener(cameraSelector, selectedDeviceId => {
                 // Apply new camera selection
                 const updatedConstraints = {
+                    audio: false,
                     video: { deviceId: { exact: selectedDeviceId },
                         ...videoConstraints
                      }
@@ -378,7 +379,7 @@ export function setupCameraSelectorLegacyImpl(containerId, videoElementId) {
     const cameraSelector = createCameraSelector("div-button-selector");
 
     // First request access to the user's camera
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         .then(stream => {
             // Make sure to handle this stream properly, e.g., attaching it to a video element or stopping it if not needed
             videoElement.srcObject = stream;
@@ -394,7 +395,7 @@ export function setupCameraSelectorLegacyImpl(containerId, videoElementId) {
                 populateCameraSelector(cameras, cameraSelector);
                 setupCameraChangeListener(cameraSelector, selectedDeviceId => {
                     // Switch to the new camera
-                    navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } } })
+                    navigator.mediaDevices.getUserMedia({ audio: false, video: { deviceId: { exact: selectedDeviceId } } })
                         .then(newStream => {
                             videoElement.srcObject = newStream;
                             videoElement.play();

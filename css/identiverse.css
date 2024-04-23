@@ -79,3 +79,23 @@
 /* #video-element {
     margin-right: -1px;
 } */
+
+/* animation.js related */
+
+#animation-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 328px;
+    /* You can adjust this size as needed */
+    color: rgba(255, 255, 255, 0.7);
+    /* Off-white color with 30-50% opacity */
+    z-index: 10;
+    pointer-events: none;
+    /* Makes sure the countdown doesn't interfere with video interactions */
+}
+
+/* #countdown.active {
+    animation: countdown 1s linear;
+} */
