@@ -1,12 +1,12 @@
 // camera-settings-register-flow.js
 
 export const cameraSettingsRegister = {
-    anchorClass: ".Step1PurchaseAnchorJS",
+    anchorClass: ".Step6PurchaseAnchorJS",
     videoContainerId: "video-container",
     videoElementId: "video-element",
     captureButtonId: "capture-button",
-    userImageInputId: "identiverse_purchase_step1-TEXT_FIELD-userImage-input_container-input",
-    hiddenFormSubmitButtonId: "identiverse_purchase_step1-submit-Submit-button_container",
+    userImageInputId: "identiverse_purchase_step6-TEXT_FIELD-userImage-input_container-input",
+    hiddenFormSubmitButtonId: "identiverse_purchase_step6-submit-Submit-button_container",
     videoConstraints: {
         width: { ideal: 1300 },
         height: { ideal: 1300 }
