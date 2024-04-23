@@ -7,15 +7,15 @@ export const cameraSettingsRegister = {
     captureButtonId: "capture-button",
     userImageInputId: "identiverse_purchase_step1-TEXT_FIELD-userImage-input_container-input",
     videoConstraints: {
-        width: { ideal: 624 },
-        height: { ideal: 500 }
+        width: { ideal: 900 },
+        height: { ideal: 900 }
     },
     videoContainerStyles: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxWidth: "624px",
-        height: "500px",
+        maxWidth: "650px",
+        height: "650px",
         width: "100%",
         margin: "auto",
         marginBottom: "10px",
@@ -26,5 +26,7 @@ export const cameraSettingsRegister = {
         drawLandmarks: true,
         drawExpressions: true,
         drawAgeAndGender: true,
+        detectionInterval: 100,
+        detectionThreshold: 0.8
     }
 };

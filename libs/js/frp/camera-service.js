@@ -1,9 +1,10 @@
 // Import utilities
-import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from '../utils/tulip-customizer-commons.js';
+import { observeDOMChanges, insertElementBelowAnchor, appendChildToElement, clickButtonById } from '../utils/tulip-customizer-commons.js';
 import { requestCameraAccess, captureImage, setupCameraSelector } from '../utils/tulip-customizer-camera.js';
 
 const DELAY_RESIZE_OBSERVER = 1500; // Delay in milliseconds to wait before resizing the canvas
 let canvas;
+let scanIntervalId;
 
 export function setupCameraSystem(config) {
     const videoContainerOptions = {
@@ -30,7 +31,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
         styles: {
             width: '100%',
             height: '100%',
-            objectFit: 'cover'
+            objectFit: 'contain'
         },
         attributes: {
             autoplay: true,
@@ -113,12 +114,12 @@ function mobileCameraSetup(videoElement, config) {
     // Apply simulated fullscreen style to videoContainer
     videoContainer.classList.add('simulated-fullscreen');
 
-    var topValue = (window.innerHeight - 500) / 2;
+    var topValue = (window.innerHeight - 650) / 2;
     videoContainer.style.top = `${topValue}px`;  // Set the calculated top value
-
 
     body.style.backgroundColor = 'black';  // Set the background color of the body to black
     
+    videoElement.style.objectFit = 'cover';  // Set the object-fit style to cover
     // if (videoContainer.classList.contains('simulated-fullscreen')) {
     //     // Exiting fullscreen
     //     videoContainer.classList.remove('simulated-fullscreen');
@@ -222,32 +223,7 @@ export async function loadFaceApiModels() {
 }
 
 
-function setDimensions(videoContainerId, videoElement) {    
 
-            
-    console.log(`Before setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    console.log(`Before setDimensions: Video dimensions: width: ${videoElement.videoWidth}, height: ${videoElement.videoHeight}`);
-    console.log(`Before setDimensions: Video ratio: ${videoElement.videoWidth / videoElement.videoHeight}`)
-    console.log(`Before setDimensions: Raw video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    console.log(`Before setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
-
-    console.log("Setting video element dimensions to match video container.")
-    const videoContainer = document.getElementById(videoContainerId)
-    videoElement.width = videoContainer.videoWidth;
-    videoElement.height = videoContainer.videoHeight;
-    canvas.width = videoContainer.videoWidth;
-    canvas.height = videoContainer.videoHeight;
-
-    // const displaySize = { width: videoElement.offsetWidth, height: videoElement.offsetHeight };
-    const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
-    console.log("Matching canvas dimensions to displaySize.")
-    faceapi.matchDimensions(canvas, displaySize);
-    console.log(`After setDimensions: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    console.log(`After setDimensions: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    console.log(`After setDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
-
-    return displaySize;
-}
 
 function startFaceDetection(videoElement, config) {
     // videoElement.addEventListener('loadedmetadata', () => {
@@ -276,7 +252,7 @@ function startFaceDetection(videoElement, config) {
         // console.log(`After matchDimensions: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
         // console.log(`After matchDimensions: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
 
-        setInterval(async () => {
+        scanIntervalId = setInterval(async () => {
             const detections = await faceapi
             .detectAllFaces(videoElement, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
@@ -294,12 +270,43 @@ function startFaceDetection(videoElement, config) {
 
                 if (detections.length > 1) {
                     console.log("Multiple faces detected!");
+                    return;
                 }
-                else {
-                   // console.log("More details about detections object:", detections);
-                }
-                // if (detections.detection.score > 0.6) {
-                    // console.log("Face detected! Score is:", detections.detection.score)
+                // else {
+                //    console.log("More details about detections object:", detections);
+                // }
+
+                // // Ensure there is at least one detection and that the detection object is well-defined
+                // if (detections.length === 1 && detections[0] && detections[0].detection && typeof detections[0].detection.score !== 'undefined' && detections[0].detection.score > 0.70) {
+                //     console.log("Face detected! Score is:", detections.detection.score)
+
+                //     captureImage(videoElement, config.userImageInputId)
+                // }
+
+                detections.forEach(detection => {
+                    if (detection && detection.detection && typeof detection.detection.score !== 'undefined') {
+                        // // Check if the detection score is above the threshold
+                        // if (detection.detection.score > config.faceApiFeatures.detectionThreshold) {
+                        //     console.log('High score detection:', detection);
+                        //     captureImage(videoElement, config.userImageInputId);
+                        //     // TODO: add more logic  here, counter/timebased, multiple pics, etcs
+                        //     // for now submit first high score
+                        //     stopDetection();
+                        //     stopCamera(videoElement);
+                        //     clearCanvas();
+                        //     setTimeout(() => {
+                        //         clickButtonById(config.hiddenFormSubmitButtonId);
+
+                        //     }, 1500);
+                        // }
+
+                    //     } else {
+                    //         console.log('Detection score below threshold:', detection);
+                    //     }
+                    // } else {
+                    //     console.log('Invalid detection or score undefined:', detection);
+                    }
+                });
 
                     // TODO: do something here with the data? add a counter, take 10 pics, then stop
                     // captureAndStoreFacialScan();
@@ -311,7 +318,7 @@ function startFaceDetection(videoElement, config) {
             //     console.log("No face detected");
             // }
 
-        }, 200);
+        }, config.faceApiFeatures.detectionInterval);
     // });
 }
 
@@ -319,28 +326,47 @@ function startFaceDetection(videoElement, config) {
 
 function resizeResults(detections, config) {
 
-    // console.log(`Before resizeResults: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    // console.log(`Before resizeResults: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    // console.log(`Before resizeResults: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
-
-    // const videoContainer = document.getElementById(config.videoContainerId)
-    // console.log("Video container dimensions: width:", `${videoContainer.offsetWidth} x ${videoContainer.offsetHeight}px`);
-    // const videoElement = document.getElementById(config.videoElementId);
-    // videoElement.width = videoContainer.offsetWidth;
-    // videoElement.height = videoContainer.offsetHeight;
-    // const displaySize = { width: videoElement.offsetWidth, height: videoElement.offsetHeight };
-    // console.log("DYNAMIC displaySize (for matchDimensions) is:", displaySize);
-    // faceapi.matchDimensions(canvas, displaySize);
-
-    // console.log(`After resizeResults: Canvas dimensions: width: ${canvas.width}, height: ${canvas.height}`);
-    // console.log(`After resizeResults: Video dimensions: width: ${videoElement.width}, height: ${videoElement.height}`);
-    // console.log(`After resizeResults: Offset raw video dimensions: width: ${videoElement.offsetWidth}, height: ${videoElement.offsetHeight}`);
-
-    console.log("************** IN RESIZE RESULTS ************** CALLING MATCH DIMENSIONS");
+    const videoContainer = document.getElementById(config.videoContainerId)
     const videoElement = document.getElementById(config.videoElementId);
-    const displaySize = setDimensions(config.videoContainerId, videoElement);
-    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            
+
+    //canvas.style.display = 'block';
+
+    const dims = faceapi.matchDimensions(canvas, videoElement, true);
+    dims.height = videoElement.offsetHeight;
+    dims.width = videoElement.offsetWidth;
+    canvas.height = videoElement.offsetHeight;
+    canvas.width = videoElement.offsetWidth;
+
+    //console.log("Setting video element dimensions to match video container.")
+    // resize the box since the display image has a different size than the original video 
+    const resizedDetections = faceapi.resizeResults(detections, dims);
+    
+    // canvas.width = videoElement.offsetWidth;
+    // canvas.height = videoElement.offsetHeight;
+    videoElement.width = videoElement.videoWidth;
+    videoElement.height = videoElement.videoHeight;
+    videoElement.style.width = videoElement.offsetWidth + 'px';
+    videoElement.style.height = videoElement.offsetHeight + 'px';
+
     return resizedDetections;
+
+
+
+    // videoElement.width = videoContainer.videoWidth;
+    // videoElement.height = videoContainer.videoHeight;
+    // canvas.width = videoContainer.videoWidth;
+    // canvas.height = videoContainer.videoHeight;
+
+    // const displaySize = { width: videoElement.videoWidth, height: videoElement.videoHeight };
+    // faceapi.matchDimensions(canvas, displaySize);
+    
+
+
+
+
+    // // const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    // return resizedDetections;
   
 }
 
@@ -370,9 +396,9 @@ function drawFeaturesOnCanvas(detections, config) {
 
 function clearCanvas() {
     canvas
-      .getContext("2d")
+      .getContext("2d", { willReadFrequently: true })
       .clearRect(0, 0, canvas.width, canvas.height);
-    console.log("Canvas cleared!");
+    // console.log("Canvas cleared!");
   }
 
   
@@ -410,3 +436,23 @@ function observeContainerResize(elementId) {
   
     resizeObserver.observe(webcamContainer);
   }
+
+
+function stopDetection() {
+    console.log("Stopping detection...");
+    clearInterval(scanIntervalId);
+    scanIntervalId = null;
+    console.log("Interval stopped.");
+}
+
+function stopCamera(videoElement) {
+    console.log("Stopping camera...");
+
+    // stop camera
+    // Stop any existing streams
+    if (videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        console.log("Stopped existing video tracks on the element before applying new stream.");
+    }
+}

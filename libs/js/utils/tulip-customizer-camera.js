@@ -355,3 +355,59 @@ export function setupCameraSelector(containerId, videoElementId, videoConstraint
             console.error("Error enumerating devices:", error);
         });
 }
+
+
+
+
+/**
+ * Sets up a camera selector and manages camera access for a specified video element.
+ * This function is adaptable for various uses where camera selection and streaming are needed.
+ *
+ * @param {string} containerId - The ID of the container where the camera selector will be placed.
+ * @param {string} videoElementId - The ID of the video element that will display the camera stream.
+ */
+export function setupCameraSelectorLegacyImpl(containerId, videoElementId) {
+
+    const videoElement = document.getElementById(videoElementId);
+    if (!videoElement) {
+        console.error("Video element not found:", videoElementId);
+        return;
+    }
+
+    insertElementBelowAnchor('#' + containerId, "div-button-selector", "div")
+    const cameraSelector = createCameraSelector("div-button-selector");
+
+    // First request access to the user's camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            // Make sure to handle this stream properly, e.g., attaching it to a video element or stopping it if not needed
+            videoElement.srcObject = stream;
+            videoElement.play();
+
+            // Now enumerate devices since user has granted permission
+            return navigator.mediaDevices.enumerateDevices();
+        })
+        .then(devices => {
+            const cameras = devices.filter(device => device.kind === 'videoinput');
+            if (cameras.length > 1) {  // Only add the camera selector if there's more than one camera
+                const cameraSelector = createCameraSelector(containerId);
+                populateCameraSelector(cameras, cameraSelector);
+                setupCameraChangeListener(cameraSelector, selectedDeviceId => {
+                    // Switch to the new camera
+                    navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId } } })
+                        .then(newStream => {
+                            videoElement.srcObject = newStream;
+                            videoElement.play();
+                        })
+                        .catch(error => {
+                            console.error("Failed to access camera with new device ID:", error);
+                        });
+                });
+            } else {
+                cameraSelector.style.display = "none";
+            }
+        })
+        .catch(error => {
+            console.error("Error accessing the camera for initial setup:", error);
+        });
+}

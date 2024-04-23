@@ -31,8 +31,10 @@
     /* top: 0;
     left: 0; */
     /* aspect-ratio: 0.5; */
-}
 
+    /* width: 650px;
+    height: 650px; */
+}
 
 
 /* Simulated fullscreen styles */
@@ -51,10 +53,15 @@
     pointer-events: none;
 }
 
-.simulated-fullscreen video,
-.simulated-fullscreen canvas {
+.simulated-fullscreen video {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+.simulated-fullscreen canvas {
+    width: 650px;
+    height: 650px;
 }
 
 #overlayCanvas {
@@ -67,3 +74,8 @@
     overflow: hidden;
     /* Prevents scrolling on the body */
 }
+
+/* remove extra black pixel on the right */
+/* #video-element {
+    margin-right: -1px;
+} */
