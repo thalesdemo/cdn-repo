@@ -1,4 +1,4 @@
-// camera-settings-login-flow.js
+// badge-settings-login-flow.js
 
 export const badgeSettingsLogin = {
     anchorClass: ".Step1RedeemAnchorJS",

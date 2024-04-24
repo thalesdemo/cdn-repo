@@ -28,14 +28,14 @@ export function setInitialCamera(cameras, selector, qrScanner) {
  * @param {function} resultHandler - Callback function to handle QR scan results.
  */
 
-export function initializeQrScanner(config) {
-    const video = document.getElementById(config.videoElementId);
+export function initializeQrScanner(qrConfig) {
+    const video = document.getElementById(qrConfig.videoElementId);
     if (!video) {
-        console.error("Video element not found:", config.videoElementId);
+        console.error("Video element not found:", qrConfig.videoElementId);
         return;
     }
 
-    const qrScanner = new QrScanner(video, result => handleQrResult(result.data, config), {
+    const qrScanner = new QrScanner(video, result => handleQrResult(result.data, qrConfig), {
         highlightScanRegion: true,
         highlightCodeOutline: true,
     });
@@ -44,11 +44,11 @@ export function initializeQrScanner(config) {
         return QrScanner.listCameras(true);
     }).then(cameras => {
         // Set up the camera selector and handle camera changes
-        setupCameraSelectorLegacyImpl(config.containerId, config.videoElementId);
+        setupCameraSelectorLegacyImpl(qrConfig.containerId, qrConfig.videoElementId);
         
 
     }).catch(err => {
-        displayErrorImage(config.failureImageContainerId);
+        displayErrorImage(qrConfig.failureImageContainerId);
         console.error("Error starting the scanner:", err);
     });
 }
@@ -66,6 +66,8 @@ function handleQrResult(qrData, config) {
         }, config.submitButtonDelay);
     } else {
         console.log("Continuing to scan...");
+        console.log("qrData:", qrData);
+        console.log("pattern:", pattern);
     }
 }
 

@@ -180,3 +180,8 @@ export function appendChildToElement(parentId, childId, childType, options = {})
   parent.appendChild(childElement);
   return childElement;
 }
+
+
+export function wait(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
