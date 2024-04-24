@@ -1,6 +1,6 @@
 // tulip-qr-scanner.js
 
-import QrScanner from '../qr-scanner/1.4.2/qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
+import QrScanner from '../ext/qr-scanner/1.4.2/qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
 import { populateInputField, clickButtonById, insertElementBelowAnchor } from './tulip-customizer-commons.js';
 import { displaySuccessImage, displayErrorImage, setupCameraSelector, setupCameraSelectorLegacyImpl } from './tulip-customizer-camera.js';
 
@@ -28,14 +28,14 @@ export function setInitialCamera(cameras, selector, qrScanner) {
  * @param {function} resultHandler - Callback function to handle QR scan results.
  */
 
-export function initializeQrScanner(config) {
-    const video = document.getElementById(config.videoElementId);
+export function initializeQrScanner(qrConfig) {
+    const video = document.getElementById(qrConfig.videoElementId);
     if (!video) {
-        console.error("Video element not found:", config.videoElementId);
+        console.error("Video element not found:", qrConfig.videoElementId);
         return;
     }
 
-    const qrScanner = new QrScanner(video, result => handleQrResult(result.data, config), {
+    const qrScanner = new QrScanner(video, result => handleQrResult(result.data, qrConfig), {
         highlightScanRegion: true,
         highlightCodeOutline: true,
     });
@@ -44,11 +44,11 @@ export function initializeQrScanner(config) {
         return QrScanner.listCameras(true);
     }).then(cameras => {
         // Set up the camera selector and handle camera changes
-        setupCameraSelectorLegacyImpl(config.containerId, config.videoElementId);
+        setupCameraSelectorLegacyImpl(qrConfig.containerId, qrConfig.videoElementId);
         
 
     }).catch(err => {
-        displayErrorImage(config.failureImageContainerId);
+        displayErrorImage(qrConfig.failureImageContainerId);
         console.error("Error starting the scanner:", err);
     });
 }
@@ -66,17 +66,27 @@ function handleQrResult(qrData, config) {
         }, config.submitButtonDelay);
     } else {
         console.log("Continuing to scan...");
+        console.log("qrData:", qrData);
+        console.log("pattern:", pattern);
     }
 }
 
+/**
+ * Uses QR data matches to populate specific input fields. The function checks if the corresponding
+ * field IDs are defined in the config object before attempting to populate them. This prevents errors
+ * in scenarios where some fields may not be required or provided.
+ * 
+ * @param {Array} match - An array containing matched values from QR data, where indices correspond to specific fields.
+ * @param {Object} config - A configuration object containing field IDs.
+ */
 function populateInputFieldsFromQrData(match, config) {
-    if (match[1]) {
+    if (match[1] && config.fields.userName) {
         populateInputField(config.fields.userName, match[1]);
     }
-    if (match[3]) {
+    if (match[3] && config.fields.firstName) {
         populateInputField(config.fields.firstName, decodeURIComponent(match[3]));
     }
-    if (match[5]) {
+    if (match[5] && config.fields.lastName) {
         populateInputField(config.fields.lastName, decodeURIComponent(match[5]));
     }
 }

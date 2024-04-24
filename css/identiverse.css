@@ -1,41 +1,14 @@
-/* videoStyles.css */
-
-/* temporary capture button. 1w button will be used eventually */
-#capture-button {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    border: 1px solid #000;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    font-weight: bold;
-    color: #000;
-    text-transform: uppercase;
-    font-size: 14px;
-    outline: none;
-    transition: background-color 0.3s;
-}
-
-#capture-button:hover {
-    background-color: #e0e0e0;
-}
-
-#capture-button:mouseout {
-    background-color: #f0f0f0;
-}
-
-
+/* identiverse.css */
 #video-container canvas {
     position: absolute;
     /* top: 0;
     left: 0; */
     /* aspect-ratio: 0.5; */
-
     /* width: 650px;
     height: 650px; */
+    pointer-events: none;
+    /* Allows clicks to pass through to the video */
 }
-
 
 /* Simulated fullscreen styles */
 .simulated-fullscreen {
@@ -64,24 +37,7 @@
     height: 650px;
 }
 
-#overlayCanvas {
-    pointer-events: none;
-    /* Allows clicks to pass through to the video */
-}
-
-
-.body-no-scroll {
-    overflow: hidden;
-    /* Prevents scrolling on the body */
-}
-
-/* remove extra black pixel on the right */
-/* #video-element {
-    margin-right: -1px;
-} */
-
 /* animation.js related */
-
 #animation-container {
     position: absolute;
     top: 50%;
