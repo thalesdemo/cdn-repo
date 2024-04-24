@@ -1,44 +1,48 @@
 // badge-settings-login-flow.js
-
 export const badgeSettingsLogin = {
-    anchorClass: ".Step1RedeemAnchorJS",
-    videoContainerId: "video-container",
-    videoElementId: "video-element",
-    captureButtonId: "capture-button",
-    userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
-    hiddenFormSubmitButtonId: "identiverse_redeem_step1-submit-Submit-button_container",
-    mobileWidth: 744, //px (accounts for iPad mini)
-    videoConstraints: {
-        width: { ideal: 1300 },
-        height: { ideal: 1300 }
-    },
-    videoContainerStyles: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        maxWidth: "650px",
-        height: "650px",
-        width: "100%",
-        margin: "auto",
-        marginBottom: "10px",
-        backgroundColor: "black",
-    },
-    faceApiFeatures: {
-        drawBoundingBox: true,
-        drawLandmarks: true,
-        drawExpressions: true,
-        drawAgeAndGender: true,
-        detectionInterval: 100, // milliseconds
-        countdownDuration: 3, // seconds
-        detectionThreshold: 0.75,
-        badScore: {
-            windowSize: 10,             // recentWindow: Number of recent samples to check for bad score threshold
-            maxBadScoreInWindow: 4      // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
+    video: {
+        elementId: "qr-element",
+        containerId: "qr-container",
+        styles: {
+            container: {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                maxWidth: "640px",
+                width: "100%",
+                height: "480px",
+                margin: "auto",
+                marginTop: "20px",
+                marginBottom: "10px",
+                backgroundColor: "black",
+                overflow: "hidden"
+            },
+            element: {
+                maxWidth: "100%",
+                margin: "auto",
+                width: "100%",      // Fill the width of the container
+                height: "100%",     // Fill the height of the container
+                objectFit: "cover"  // Cover the container while maintaining the aspect ratio
+            }
         }
     },
-    delayBetweenAnimations: 200, // 2x detectionInterval
-    fontSize: {
-        countdown: "328px", // Font size for countdown
-        success: "54px" // Font size for success message
-    } // mobile will use half these dims
+    interaction: {
+        qrRegexPattern: /^user:\/\/identiverse\?id=([^&]+)(&firstname=([^&]*))?(&lastname=([^&]*))?/,
+        submitButtonDelay: 1500 // milliseconds
+    },
+    domSelectors: {
+        purchaseStep1Anchor: ".Step1PurchaseAnchorJS",
+        step1Selectors: {
+            userNameId: "identiverse_purchase_step1-TEXT_FIELD-userName-input_container-input",
+            firstNameId: "identiverse_purchase_step1-TEXT_FIELD-firstName-input_container-input",
+            lastNameId: "identiverse_purchase_step1-TEXT_FIELD-lastName-input_container-input",
+            submitButtonId: "identiverse_purchase_step1-submit-Submit-button_container"
+        },
+        step2Selectors: {
+            predefinedFirstName: ".predefinedFirstName h1 span span",
+            predefinedLastName: ".predefinedLastName h1 span span",
+            firstNameId: "identiverse_purchase_step2-TEXT_FIELD-givenName-input_container-input",
+            lastNameId: "identiverse_purchase_step2-TEXT_FIELD-name-input_container-input"
+        }
+    }
 };
