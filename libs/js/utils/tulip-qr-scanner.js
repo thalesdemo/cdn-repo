@@ -1,6 +1,6 @@
 // tulip-qr-scanner.js
 
-import QrScanner from '../qr-scanner/1.4.2/qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
+import QrScanner from '../ext/qr-scanner/1.4.2/qr-scanner.min.js';  // Ensure QrScanner is appropriately imported
 import { populateInputField, clickButtonById, insertElementBelowAnchor } from './tulip-customizer-commons.js';
 import { displaySuccessImage, displayErrorImage, setupCameraSelector, setupCameraSelectorLegacyImpl } from './tulip-customizer-camera.js';
 

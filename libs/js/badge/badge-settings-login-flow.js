@@ -1,6 +1,6 @@
 // camera-settings-login-flow.js
 
-export const cameraSettingsLogin = {
+export const badgeSettingsLogin = {
     anchorClass: ".Step1RedeemAnchorJS",
     videoContainerId: "video-container",
     videoElementId: "video-element",
@@ -24,7 +24,6 @@ export const cameraSettingsLogin = {
         backgroundColor: "black",
     },
     faceApiFeatures: {
-        modelPath: 'https://cdn.onewelco.me/libs/js/ext/face-api/models/',
         drawBoundingBox: true,
         drawLandmarks: true,
         drawExpressions: true,

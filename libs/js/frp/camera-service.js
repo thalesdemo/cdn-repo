@@ -82,7 +82,7 @@ function setupVideoAndButton(config, videoContainerOptions) {
     });
 
     /* In parallel, load the face-api models */
-    const modelLoading = loadFaceApiModels();
+    const modelLoading = loadFaceApiModels(config);
 
     /* Once both the camera and models are ready, set up the camera selector and start face detection
      * Note: The camera selector is only set up if there are multiple cameras available and could not
@@ -188,14 +188,14 @@ function createCanvas(videoContainerId, videoElement) {
 }
 
 /* Function to load the face-api models */
-export async function loadFaceApiModels() {
+export async function loadFaceApiModels(config) {
     try {
         await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
-            faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/'),
-            faceapi.nets.ageGenderNet.loadFromUri('https://cdn.onewelco.me/libs/js/face-api/models/')
+            faceapi.nets.tinyFaceDetector.loadFromUri(config.faceApiFeatures.modelPath),
+            faceapi.nets.faceLandmark68Net.loadFromUri(config.faceApiFeatures.modelPath),
+            faceapi.nets.faceRecognitionNet.loadFromUri(config.faceApiFeatures.modelPath),
+            faceapi.nets.faceExpressionNet.loadFromUri(config.faceApiFeatures.modelPath),
+            faceapi.nets.ageGenderNet.loadFromUri(config.faceApiFeatures.modelPath)
         ]).then(function () {
             console.log('Face-API models loaded successfully');
         });

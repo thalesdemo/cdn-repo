@@ -1,13 +1,13 @@
-// camera-settings-login-flow.js
+// camera-settings-register-flow.js
 
-export const cameraSettingsLogin = {
-    anchorClass: ".Step1RedeemAnchorJS",
+export const badgeSettingsRegister = {
+    anchorClass: ".Step6PurchaseAnchorJS",
     videoContainerId: "video-container",
     videoElementId: "video-element",
     captureButtonId: "capture-button",
-    userImageInputId: "identiverse_redeem_step1-TEXT_FIELD-userImage-input_container-input",
-    hiddenFormSubmitButtonId: "identiverse_redeem_step1-submit-Submit-button_container",
-    mobileWidth: 744, //px (accounts for iPad mini)
+    userImageInputId: "identiverse_purchase_step6-TEXT_FIELD-userImage-input_container-input",
+    hiddenFormSubmitButtonId: "identiverse_purchase_step6-submit-Submit-button_container",
+    mobileWidth: 744,
     videoConstraints: {
         width: { ideal: 1300 },
         height: { ideal: 1300 }
@@ -24,7 +24,6 @@ export const cameraSettingsLogin = {
         backgroundColor: "black",
     },
     faceApiFeatures: {
-        modelPath: 'https://cdn.onewelco.me/libs/js/ext/face-api/models/',
         drawBoundingBox: true,
         drawLandmarks: true,
         drawExpressions: true,

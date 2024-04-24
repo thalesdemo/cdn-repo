@@ -58,11 +58,18 @@ const qrConfig = {
   }
 };
 
-import { populateInputField, observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from './utils/tulip-customizer-commons.js';
-import { initializeQrScanner } from './utils/tulip-qr-scanner.js';
+import { populateInputField, observeDOMChanges, insertElementBelowAnchor, appendChildToElement } from '../utils/tulip-customizer-commons.js';
+import { initializeQrScanner } from '../utils/tulip-qr-scanner.js';
 
 
 window.qrScannerInitialized = window.qrScannerInitialized || false;
+
+
+
+export function setupBadgeSystem(config) {
+
+};
+
 
 // Wait for the DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
