@@ -24,7 +24,7 @@ export const cameraSettingsRegister = {
         backgroundColor: "black",
     },
     faceApiFeatures: {
-        modelPath: 'https://cdn.onewelco.me/libs/js/ext/face-api/models/',
+        modelPath: 'https://cdn.onewelco.me/libs/js/extras/face-api/models/',
         drawBoundingBox: true,
         drawLandmarks: true,
         drawExpressions: true,
