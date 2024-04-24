@@ -31,18 +31,10 @@ export const badgeSettingsLogin = {
         submitButtonDelay: 1500 // milliseconds
     },
     domSelectors: {
-        purchaseStep1Anchor: ".Step1PurchaseAnchorJS",
         step1Selectors: {
+            anchorClass: ".Step1PurchaseAnchorJS",
             userNameId: "identiverse_purchase_step1-TEXT_FIELD-userName-input_container-input",
-            firstNameId: "identiverse_purchase_step1-TEXT_FIELD-firstName-input_container-input",
-            lastNameId: "identiverse_purchase_step1-TEXT_FIELD-lastName-input_container-input",
             submitButtonId: "identiverse_purchase_step1-submit-Submit-button_container"
-        },
-        step2Selectors: {
-            predefinedFirstName: ".predefinedFirstName h1 span span",
-            predefinedLastName: ".predefinedLastName h1 span span",
-            firstNameId: "identiverse_purchase_step2-TEXT_FIELD-givenName-input_container-input",
-            lastNameId: "identiverse_purchase_step2-TEXT_FIELD-name-input_container-input"
         }
     }
 };

@@ -5,4 +5,3 @@ import { badgeSettingsLogin } from './badge/badge-settings-login-flow.js';
 
 setupBadgeSystem(badgeSettingsRegister); // stage.one.register.step1
 setupBadgeSystem(badgeSettingsLogin); // stage.two.purchase.step1
-

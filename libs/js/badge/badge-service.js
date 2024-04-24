@@ -33,7 +33,7 @@ export function setupBadgeSystem(config) {
     const tasks = [
       {
         check: () =>
-          document.querySelector(config.domSelectors.registerStep1Anchor) &&
+          document.querySelector(config.domSelectors.step1Selectors.anchorClass) &&
           !document.querySelector("#" + config.video.containerId),
         action: () => {
           insertVideoContainer(config);
@@ -50,16 +50,16 @@ export function setupBadgeSystem(config) {
       {
         check: () =>
           document.querySelector(
-            config.domSelectors.step2Selectors.predefinedFirstName
+            config.domSelectors.step2Selectors?.predefinedFirstName
           ),
         action: () => {
           const firstNameValue = document.querySelector(
-            config.domSelectors.step2Selectors.predefinedFirstName
+            config.domSelectors.step2Selectors?.predefinedFirstName
           ).textContent;
           if (firstNameValue) {
             console.log("Populating givenName input with:", firstNameValue);
             populateInputField(
-              config.domSelectors.step2Selectors.firstNameId,
+              config.domSelectors.step2Selectors?.firstNameId,
               firstNameValue
             );
           }
@@ -68,16 +68,16 @@ export function setupBadgeSystem(config) {
       {
         check: () =>
           document.querySelector(
-            config.domSelectors.step2Selectors.predefinedLastName
+            config.domSelectors.step2Selectors?.predefinedLastName
           ),
         action: () => {
           const lastNameValue = document.querySelector(
-            config.domSelectors.step2Selectors.predefinedLastName
+            config.domSelectors.step2Selectors?.predefinedLastName
           ).textContent;
           if (lastNameValue) {
             console.log("Populating lastName input with:", lastNameValue);
             populateInputField(
-              config.domSelectors.step2Selectors.lastNameId,
+              config.domSelectors.step2Selectors?.lastNameId,
               lastNameValue
             );
           }
@@ -92,7 +92,7 @@ export function setupBadgeSystem(config) {
 // Function to insert the video container and its contents below the specified anchor
 function insertVideoContainer(config) {
   console.log("Inserting video container below the register step 1 anchor");
-  const anchorSelector = config.domSelectors.registerStep1Anchor; // Updated to use constant
+  const anchorSelector = config.domSelectors.step1Selectors.anchorClass; // Updated to use constant
   const videoContainerOptions = {
     styles: {
       ...config.video.styles.container,

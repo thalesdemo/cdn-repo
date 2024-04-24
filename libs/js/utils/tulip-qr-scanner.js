@@ -71,14 +71,22 @@ function handleQrResult(qrData, config) {
     }
 }
 
+/**
+ * Uses QR data matches to populate specific input fields. The function checks if the corresponding
+ * field IDs are defined in the config object before attempting to populate them. This prevents errors
+ * in scenarios where some fields may not be required or provided.
+ * 
+ * @param {Array} match - An array containing matched values from QR data, where indices correspond to specific fields.
+ * @param {Object} config - A configuration object containing field IDs.
+ */
 function populateInputFieldsFromQrData(match, config) {
-    if (match[1]) {
+    if (match[1] && config.fields.userName) {
         populateInputField(config.fields.userName, match[1]);
     }
-    if (match[3]) {
+    if (match[3] && config.fields.firstName) {
         populateInputField(config.fields.firstName, decodeURIComponent(match[3]));
     }
-    if (match[5]) {
+    if (match[5] && config.fields.lastName) {
         populateInputField(config.fields.lastName, decodeURIComponent(match[5]));
     }
 }

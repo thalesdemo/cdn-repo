@@ -31,8 +31,8 @@ export const badgeSettingsRegister = {
         submitButtonDelay: 1500 // milliseconds
     },
     domSelectors: {
-        registerStep1Anchor: ".Step1RegisterAnchorJS",
         step1Selectors: {
+            anchorClass: ".Step1RegisterAnchorJS",
             userNameId: "identiverse_register_step1-TEXT_FIELD-userName-input_container-input",
             firstNameId: "identiverse_register_step1-TEXT_FIELD-firstName-input_container-input",
             lastNameId: "identiverse_register_step1-TEXT_FIELD-lastName-input_container-input",
