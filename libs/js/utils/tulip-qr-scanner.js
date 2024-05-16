@@ -5,20 +5,20 @@ import { populateInputField, clickButtonById, insertElementBelowAnchor } from '.
 import { displaySuccessImage, displayErrorImage, setupCameraSelector, setupCameraSelectorLegacyImpl } from './tulip-customizer-camera.js';
 
 
-/**
- * Sets the initial camera based on the available cameras.
- * @param {Array} cameras - An array of available camera objects.
- * @param {HTMLElement} selector - The camera selector element.
- * @param {QrScanner} qrScanner - The QR scanner instance.
- */
-export function setInitialCamera(cameras, selector, qrScanner) {
-    if (cameras.length > 0) {
-        qrScanner.setCamera(cameras[0].id).then(() => {
-            selector.value = cameras[0].id;
-            console.log("Default camera set:", cameras[0].label);
-        }).catch(console.error);
-    }
-}
+// /**
+//  * Sets the initial camera based on the available cameras.
+//  * @param {Array} cameras - An array of available camera objects.
+//  * @param {HTMLElement} selector - The camera selector element.
+//  * @param {QrScanner} qrScanner - The QR scanner instance.
+//  */
+// export function setInitialCamera(cameras, selector, qrScanner) {
+//     if (cameras.length > 0) {
+//         qrScanner.setCamera(cameras[0].id).then(() => {
+//             selector.value = cameras[0].id;
+//             console.log("Default camera set:", cameras[0].label);
+//         }).catch(console.error);
+//     }
+// }
 
 
 /**
@@ -29,20 +29,28 @@ export function setInitialCamera(cameras, selector, qrScanner) {
  */
 
 export function initializeQrScanner(qrConfig) {
+
     const video = document.getElementById(qrConfig.videoElementId);
     if (!video) {
         console.error("Video element not found:", qrConfig.videoElementId);
         return;
     }
 
-    const qrScanner = new QrScanner(video, result => handleQrResult(result.data, qrConfig), {
+    if(window.qrScanner) return;
+
+    window.qrScanner = new QrScanner(
+      video,
+      (result) => handleQrResult(result.data, qrConfig),
+      {
         highlightScanRegion: true,
         highlightCodeOutline: true,
-    });
+      }
+    );
 
-    return qrScanner.start().then(() => {
+    return window.qrScanner.start().then(() => {
         return QrScanner.listCameras(true);
     }).then(cameras => {
+        console.log("QR initialized.");
         // Set up the camera selector and handle camera changes
         setupCameraSelectorLegacyImpl(qrConfig.containerId, qrConfig.videoElementId);
         
@@ -61,13 +69,21 @@ function handleQrResult(qrData, config) {
         console.log("QR Code contains expected data.");
         populateInputFieldsFromQrData(match, config);
         displaySuccessImage(config.successImageContainerId);
+
+        if(window.qrScanner) {
+            console.log("Stopping scanner...");
+            window.qrScanner.stop();
+            window.qrScanner.destroy();
+            window.qrScanner = null;
+        }
+
         setTimeout(() => {
             clickButtonById(config.submitButtonId);
         }, config.submitButtonDelay);
     } else {
-        console.log("Continuing to scan...");
-        console.log("qrData:", qrData);
-        console.log("pattern:", pattern);
+        console.log("No match, continuing to scan.");
+        // console.log("qrData:", qrData);
+        // console.log("pattern:", pattern);
     }
 }
 
