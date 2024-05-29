@@ -9,8 +9,8 @@ export const cameraSettingsLogin = {
     hiddenFormSubmitButtonId: "identiverse_redeem_step1-submit-Submit-button_container",
     mobileWidth: 744, //px (accounts for iPad mini)
     videoConstraints: {
-        width: { ideal: 1300 },
-        height: { ideal: 1300 }
+        width: { ideal: 800 },
+        height: { ideal: 800 }
     },
     videoContainerStyles: {
         display: "flex",
@@ -28,13 +28,13 @@ export const cameraSettingsLogin = {
         drawBoundingBox: true,
         drawLandmarks: true,
         drawExpressions: true,
-        drawAgeAndGender: true,
+        drawAgeAndGender: false,
         detectionInterval: 100, // milliseconds
-        countdownDuration: 3, // seconds
-        detectionThreshold: 0.75,
+        countdownDuration: 2, // seconds
+        detectionThreshold: 0.6,
         badScore: {
             windowSize: 10,             // recentWindow: Number of recent samples to check for bad score threshold
-            maxBadScoreInWindow: 4      // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
+            maxBadScoreInWindow: 5      // maxBadScoresInWindow: Maximum number of bad scores allowed in the recent window
         }
     },
     delayBetweenAnimations: 200, // 2x detectionInterval

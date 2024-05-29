@@ -267,7 +267,7 @@ function handleScoreDetections(detections, config) {
     // Check for high enough scores to trigger the countdown once
     if (score >= config.faceApiFeatures.detectionThreshold && !scoreManager.countdownActive) {
         const display = document.querySelector('#animation-container');
-        scoreManager.startCountdown(3, display);
+        scoreManager.startCountdown(config.faceApiFeatures.countdownDuration, display);
     }
 
     if (scoreManager.hasEnoughSamples()) {

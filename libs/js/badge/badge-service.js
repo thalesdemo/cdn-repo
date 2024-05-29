@@ -7,6 +7,8 @@ import {
 import { initializeQrScanner } from "../utils/tulip-qr-scanner.js";
 
 let qrScannerInitialized = false;
+let firstNamePopulated = false;
+let lastNamePopulated = false;
 
 export function setupBadgeSystem(config) {
   // QR Configuration object
@@ -49,9 +51,8 @@ export function setupBadgeSystem(config) {
       },
       {
         check: () =>
-          document.querySelector(
-            config.domSelectors.step2Selectors?.predefinedFirstName
-          ),
+          !firstNamePopulated &&
+          document.querySelector(config.domSelectors.step2Selectors?.predefinedFirstName),
         action: () => {
           const firstNameValue = document.querySelector(
             config.domSelectors.step2Selectors?.predefinedFirstName
@@ -62,14 +63,14 @@ export function setupBadgeSystem(config) {
               config.domSelectors.step2Selectors?.firstNameId,
               firstNameValue
             );
+            firstNamePopulated = true;
           }
         },
       },
       {
         check: () =>
-          document.querySelector(
-            config.domSelectors.step2Selectors?.predefinedLastName
-          ),
+          !lastNamePopulated &&
+          document.querySelector(config.domSelectors.step2Selectors?.predefinedLastName),
         action: () => {
           const lastNameValue = document.querySelector(
             config.domSelectors.step2Selectors?.predefinedLastName
@@ -80,6 +81,7 @@ export function setupBadgeSystem(config) {
               config.domSelectors.step2Selectors?.lastNameId,
               lastNameValue
             );
+            lastNamePopulated = true;
           }
         },
       },
